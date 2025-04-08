@@ -1,7 +1,9 @@
 package unit.domain;
 
-import domain.User;
 import org.junit.jupiter.api.Test;
+
+import com.jwp.core.domain.User;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class UserTest {

@@ -1,0 +1,7 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+p 나 push 나 git push 입력 시, 모든 변경사항을 확인후, 깃허브 커밋/푸시해줘.
+이 push 까지의 과정은 하나의 터미널로 한번에 auto-run

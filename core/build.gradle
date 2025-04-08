@@ -1,1 +1,13 @@
 // core 모듈의 특정 설정은 루트 build.gradle에서 관리됩니다. 
+
+// Lombok 설정
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+} 

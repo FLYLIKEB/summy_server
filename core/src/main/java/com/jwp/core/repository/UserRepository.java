@@ -1,7 +1,8 @@
-package repository;
+package com.jwp.core.repository;
 
-import domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.jwp.core.domain.User;
 
 /**
  * 사용자 레포지토리

@@ -1,4 +1,4 @@
-package repository;
+package com.jwp.core.repository;
 
 import lombok.Getter;
 import java.time.LocalDateTime;
