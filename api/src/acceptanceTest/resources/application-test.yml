@@ -20,4 +20,4 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql: trace
-    com.jwp: debug 
+    com.jwp: debug
