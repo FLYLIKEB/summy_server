@@ -1,4 +1,4 @@
-package com.jwp.api.acceptance;
+package com.jwp.api;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
@@ -53,4 +53,4 @@ public class DatabaseCleanup implements InitializingBean {
 
         entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
     }
-}
+} 
