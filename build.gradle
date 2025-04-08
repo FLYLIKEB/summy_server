@@ -140,11 +140,11 @@ project(':core') {
     }
     
     def querydslDir = "$buildDir/generated/querydsl"
-    
-    tasks.withType(JavaCompile) {
+
+    tasks.withType(JavaCompile).configureEach {
         options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
     }
-    
+
     sourceSets {
         main.java.srcDir querydslDir
     }
@@ -156,7 +156,7 @@ project(':core') {
     }
     
     // Q클래스 생성 태스크
-    task generateQClass(type: JavaCompile, group: 'build', description: 'Q클래스 생성') {
+    tasks.register('generateQClass', JavaCompile) {
         source = sourceSets.main.java
         classpath = configurations.compileClasspath
         options.annotationProcessorPath = configurations.annotationProcessor
@@ -165,12 +165,12 @@ project(':core') {
                 "-processor", "com.querydsl.apt.jpa.JPAAnnotationProcessor"
         ]
         destinationDirectory = file(querydslDir)
-        
+
         doFirst {
             println "Q클래스 생성 시작..."
             file(querydslDir).mkdirs()
         }
-        
+
         doLast {
             println "Q클래스 생성 완료. 생성된 파일 목록:"
             fileTree(dir: querydslDir, include: '**/*.java').files.each {
