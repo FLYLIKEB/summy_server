@@ -26,13 +26,22 @@ public class UserSearchCondition {
     
     /**
      * 검색 조건의 생성자
-     * 롬복의 @Builder를 통해 생성하는 것을 권장합니다.
+     * private으로 선언하여 빌더를 통해서만 생성 가능하도록 제한합니다.
      */
     @Builder
-    public UserSearchCondition(String email, String name, DateRange dateRange) {
+    private UserSearchCondition(String email, String name, DateRange dateRange) {
         this.email = email;
         this.name = name;
         this.dateRange = dateRange != null ? dateRange : DateRange.empty();
+    }
+    
+    /**
+     * 빌더 생성을 위한 정적 팩토리 메서드
+     * 이 메서드를 통해 빌더를 얻어 객체를 생성할 수 있습니다.
+     * @return 빌더 인스턴스
+     */
+    public static UserSearchConditionBuilder builder() {
+        return new UserSearchConditionBuilder();
     }
     
     /**
