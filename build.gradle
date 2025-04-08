@@ -8,7 +8,6 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.4' apply false
     id 'io.spring.dependency-management' version '1.1.7' apply false
-    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10' apply false
 }
 
 allprojects {
@@ -61,8 +60,9 @@ subprojects {
 
 // core 모듈 관련 설정
 project(':core') {
-    apply plugin: 'com.ewerk.gradle.plugins.querydsl'
-
+    bootJar { enabled = false }
+    jar { enabled = true }
+    
     dependencies {
         // JPA
         implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -74,7 +74,7 @@ project(':core') {
         implementation 'org.flywaydb:flyway-core'
         implementation 'org.flywaydb:flyway-mysql'
         
-        // QueryDsl - Spring Boot 3.x 호환 버전
+        // QueryDsl - 의존성만 추가
         implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
         annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
         annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
@@ -84,69 +84,6 @@ project(':core') {
         runtimeOnly 'com.h2database:h2'
         // 운영용 DB 드라이버
         runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-    }
-    
-    // Q클래스 생성 설정
-    def querydslDir = new File("$buildDir/generated/querydsl")
-    
-    querydsl {
-        jpa = true
-        querydslSourcesDir = querydslDir.absolutePath
-    }
-
-    sourceSets {
-        main {
-            java {
-                srcDir querydslDir.absolutePath
-            }
-        }
-    }
-
-    compileQuerydsl {
-        options.annotationProcessorPath = configurations.annotationProcessor
-    }
-
-    tasks.named('compileJava') {
-        dependsOn 'compileQuerydsl'
-    }
-    
-    // Q클래스만 생성하는 커스텀 태스크
-    tasks.register('generateQClass', JavaCompile) {
-        group = 'querydsl'
-        description = 'Querydsl Q클래스 파일만 생성합니다'
-        
-        source = sourceSets.main.java
-        classpath = configurations.compileClasspath
-        options.annotationProcessorPath = configurations.annotationProcessor
-        options.compilerArgs = [
-            "-proc:only",
-            "-processor", "com.querydsl.apt.jpa.JPAAnnotationProcessor"
-        ]
-        destinationDirectory = querydslDir
-        
-        doFirst {
-            if (!querydslDir.exists()) {
-                logger.info("생성 디렉토리가 존재하지 않아 생성합니다: {}", querydslDir)
-                querydslDir.mkdirs()
-            }
-            logger.info("Querydsl Q클래스 생성을 시작합니다...")
-        }
-        
-        doLast {
-            logger.info("Querydsl Q클래스 생성이 완료되었습니다.")
-            logger.info("생성된 파일 위치: {}", querydslDir)
-            
-            // 생성된 Q클래스 파일 목록 출력
-            if (querydslDir.exists()) {
-                def qFiles = fileTree(querydslDir).matching {
-                    include "**/*Q*.java"
-                }
-                logger.info("생성된 Q클래스 파일 수: {}", qFiles.files.size())
-                qFiles.files.each { file ->
-                    logger.info(" - {}", file.name)
-                }
-            }
-        }
     }
 }
 
