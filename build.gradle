@@ -40,6 +40,9 @@ subprojects {
         integrationTestImplementation {
             extendsFrom testImplementation
         }
+        acceptanceTestImplementation {
+            extendsFrom testImplementation
+        }
     }
     
     sourceSets {
@@ -55,6 +58,16 @@ subprojects {
             }
             resources {
                 srcDir 'src/integrationTest/resources'
+            }
+        }
+        acceptanceTest {
+            compileClasspath += sourceSets.main.output
+            runtimeClasspath += sourceSets.main.output
+            java {
+                srcDir 'src/acceptanceTest/java'
+            }
+            resources {
+                srcDir 'src/acceptanceTest/resources'
             }
         }
     }
@@ -76,6 +89,8 @@ subprojects {
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
         unitTestImplementation 'org.springframework.boot:spring-boot-starter-test'
         integrationTestImplementation 'org.springframework.boot:spring-boot-starter-test'
+        acceptanceTestImplementation 'org.springframework.boot:spring-boot-starter-test'
+        acceptanceTestImplementation 'io.rest-assured:rest-assured:5.4.0'
     }
     
     tasks.named('test') {
@@ -103,6 +118,20 @@ subprojects {
         useJUnitPlatform()
         testClassesDirs = sourceSets.integrationTest.output.classesDirs
         classpath = sourceSets.integrationTest.runtimeClasspath
+        
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
+    }
+    
+    // 인수 테스트 태스크 정의
+    task acceptanceTest(type: Test) {
+        description = '인수 테스트만 실행합니다.'
+        group = 'verification'
+        
+        useJUnitPlatform()
+        testClassesDirs = sourceSets.acceptanceTest.output.classesDirs
+        classpath = sourceSets.acceptanceTest.runtimeClasspath
         
         testLogging {
             events "passed", "skipped", "failed"
@@ -208,5 +237,9 @@ project(':api') {
         
         // Security
         implementation 'org.springframework.boot:spring-boot-starter-security'
+        
+        // 인수 테스트 추가 의존성
+        acceptanceTestImplementation 'io.rest-assured:spring-mock-mvc:5.4.0'
+        acceptanceTestImplementation 'com.fasterxml.jackson.core:jackson-databind'
     }
 }
