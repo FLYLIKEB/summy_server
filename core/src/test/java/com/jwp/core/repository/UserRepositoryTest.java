@@ -3,20 +3,16 @@ package com.jwp.core.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.jwp.core.CoreIntegrationTestConfiguration;
 import com.jwp.core.CoreTestApplication;
-import com.jwp.core.config.JpaConfig;
 import com.jwp.core.domain.User;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@ContextConfiguration(classes = {CoreIntegrationTestConfiguration.class, JpaConfig.class})
+@ContextConfiguration(classes = CoreTestApplication.class)
 @ActiveProfiles("test")
 class UserRepositoryTest {
     
