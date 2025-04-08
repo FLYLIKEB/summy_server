@@ -7,8 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -17,7 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * 모든 인수 테스트는 이 클래스를 상속받아 구현합니다.
  */
 @ActiveProfiles("test")
-@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public abstract class AcceptanceTest {
 
@@ -43,10 +41,9 @@ public abstract class AcceptanceTest {
         this.spec = new RequestSpecBuilder()
                 .setBaseUri("http://localhost")
                 .setPort(port)
-                .addFilter(((request, response, chain) -> {
-                    response.getBody().prettyPrint();
-                    return chain.next(request, response);
-                }))
+                .addFilter((requestSpec, responseSpec, ctx) -> {
+                    return ctx.next(requestSpec, responseSpec);
+                })
                 .build();
         
         // 테스트 전 데이터 초기화
