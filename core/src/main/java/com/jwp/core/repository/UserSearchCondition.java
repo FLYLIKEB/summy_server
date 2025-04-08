@@ -49,6 +49,7 @@ public class UserSearchCondition {
     
     /**
      * 모든 필드가 null인지 확인
+     * 검색 조건이 모두 비어 있는지 확인합니다.
      * @return 모든 필드가 null인 경우 true
      */
     public boolean isEmpty() {
@@ -129,4 +130,4 @@ public class UserSearchCondition {
             return new UserSearchCondition(email, name, fromDate, toDate);
         }
     }
-} 
+}
