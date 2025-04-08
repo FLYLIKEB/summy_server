@@ -12,6 +12,7 @@ import com.jwp.core.service.UserCommandService;
 import com.jwp.core.service.UserQueryService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,15 +25,20 @@ public class UserApiService {
 
     private final UserCommandService userCommandService;
     private final UserQueryService userQueryService;
+    private final PasswordEncoder passwordEncoder;
     
     /**
      * 생성자
      * @param userCommandService 사용자 명령 서비스
      * @param userQueryService 사용자 조회 서비스
+     * @param passwordEncoder 비밀번호 암호화 인코더
      */
-    public UserApiService(UserCommandService userCommandService, UserQueryService userQueryService) {
+    public UserApiService(UserCommandService userCommandService, 
+                          UserQueryService userQueryService,
+                          PasswordEncoder passwordEncoder) {
         this.userCommandService = userCommandService;
         this.userQueryService = userQueryService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -47,12 +53,15 @@ public class UserApiService {
             throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "사용자 생성 명령은 필수입니다.");
         }
 
+        // 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(command.password());
+        
         User user = User.builder()
                 .email(command.email())
                 .name(command.name())
-                .password(command.password())
+                .password(encodedPassword)
                 .build();
-        
+    
         User savedUser = userCommandService.createUser(user);
         return savedUser.getId();
     }

@@ -5,6 +5,10 @@
 
 // 테스트를 위한 추가 의존성
 dependencies {
+    // Spring Security 추가
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.security:spring-security-test'
+    
     testImplementation 'io.rest-assured:rest-assured:5.4.0'
     testImplementation 'io.rest-assured:spring-mock-mvc:5.4.0'
 }
