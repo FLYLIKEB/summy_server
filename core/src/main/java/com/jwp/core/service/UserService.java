@@ -2,12 +2,15 @@ package com.jwp.core.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import com.jwp.core.domain.User;
 import com.jwp.core.repository.UserRepository;
 
 import jakarta.validation.Valid;
-import java.util.Objects;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -16,116 +19,104 @@ import java.util.Optional;
  */
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class UserService {
     
     private final UserRepository userRepository;
     
     /**
-     * 사용자 서비스 생성자
-     * @param userRepository 사용자 레포지토리
+     * 이메일로 사용자 조회
+     * @param email 조회할 이메일
+     * @return 조회된 사용자 (Optional)
      */
-    public UserService(UserRepository userRepository) {
-        this.userRepository = Objects.requireNonNull(userRepository, "userRepository must not be null");
+    public Optional<User> findByEmail(String email) {
+        Assert.hasText(email, "이메일은 필수입니다.");
+        
+        User user = userRepository.findByEmail(email);
+        return Optional.ofNullable(user);
     }
     
     /**
-     * 이메일로 사용자 조회
-     * @param email 조회할 이메일
-     * @return 사용자 Optional (존재하지 않을 경우 empty)
-     * @throws IllegalArgumentException 이메일이 유효하지 않은 경우
+     * 이메일 중복 확인
+     * @param email 확인할 이메일
+     * @return 중복 여부
      */
-    public Optional<User> findByEmail(String email) {
-        validateEmail(email);
-        return Optional.ofNullable(userRepository.findByEmail(email));
+    public boolean isDuplicateEmail(String email) {
+        Assert.hasText(email, "이메일은 필수입니다.");
+        return userRepository.existsByEmail(email);
     }
     
     /**
      * 사용자 생성
      * @param user 생성할 사용자 정보
      * @return 생성된 사용자
-     * @throws IllegalArgumentException 이미 존재하는 이메일이거나 유효하지 않은 사용자 정보인 경우
+     * @throws IllegalArgumentException 이메일이 중복된 경우
      */
     @Transactional
     public User createUser(@Valid User user) {
-        Objects.requireNonNull(user, "사용자 정보는 null일 수 없습니다");
-        validateNewUser(user);
-        return userRepository.save(user);
-    }
-
-    /**
-     * 사용자 이름 업데이트
-     * @param email 업데이트할 사용자 이메일
-     * @param newName 새로운 이름
-     * @return 업데이트된 사용자
-     * @throws IllegalArgumentException 사용자가 존재하지 않거나 이름이 유효하지 않은 경우
-     */
-    @Transactional
-    public User updateUserName(String email, String newName) {
-        validateEmail(email);
-        Objects.requireNonNull(newName, "새 이름은 null일 수 없습니다");
+        Assert.notNull(user, "사용자 정보는 필수입니다.");
         
-        return findByEmail(email)
-                .map(user -> {
-                    user.updateName(newName);
-                    return user;
-                })
-                .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 사용자가 존재하지 않습니다: " + email));
+        if (isDuplicateEmail(user.getEmail())) {
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+        }
+        
+        return userRepository.save(user);
     }
     
     /**
-     * 사용자 비밀번호 업데이트
-     * @param email 업데이트할 사용자 이메일
-     * @param newPassword 새로운 비밀번호
+     * 사용자 정보 업데이트
+     * @param email 대상 사용자 이메일
+     * @param newName 새로운 이름
      * @return 업데이트된 사용자
-     * @throws IllegalArgumentException 사용자가 존재하지 않거나 비밀번호가 유효하지 않은 경우
+     * @throws IllegalArgumentException 사용자를 찾을 수 없는 경우
      */
     @Transactional
-    public User updateUserPassword(String email, String newPassword) {
-        validateEmail(email);
-        Objects.requireNonNull(newPassword, "새 비밀번호는 null일 수 없습니다");
+    public User updateUserInfo(String email, String newName) {
+        Assert.hasText(email, "이메일은 필수입니다.");
+        Assert.hasText(newName, "이름은 필수입니다.");
         
         return findByEmail(email)
                 .map(user -> {
-                    user.updatePassword(newPassword);
-                    return user;
+                    user.update(newName); // update 메서드 사용
+                    return userRepository.save(user);
                 })
-                .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 사용자가 존재하지 않습니다: " + email));
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+    }
+    
+    /**
+     * 비밀번호 변경
+     * @param email 대상 사용자 이메일
+     * @param newPassword 새로운 비밀번호
+     * @return 업데이트된 사용자
+     * @throws IllegalArgumentException 사용자를 찾을 수 없는 경우
+     */
+    @Transactional
+    public User changePassword(String email, String newPassword) {
+        Assert.hasText(email, "이메일은 필수입니다.");
+        Assert.hasText(newPassword, "비밀번호는 필수입니다.");
+        
+        return findByEmail(email)
+                .map(user -> {
+                    user.changePassword(newPassword); // changePassword 메서드 사용
+                    return userRepository.save(user);
+                })
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
     }
     
     /**
      * 사용자 삭제
      * @param email 삭제할 사용자 이메일
-     * @throws IllegalArgumentException 사용자가 존재하지 않는 경우
+     * @throws IllegalArgumentException 사용자를 찾을 수 없는 경우
      */
     @Transactional
     public void deleteUser(String email) {
-        validateEmail(email);
+        Assert.hasText(email, "이메일은 필수입니다.");
         
-        User user = findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 사용자가 존재하지 않습니다: " + email));
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
+        }
         
         userRepository.delete(user);
-    }
-
-    /**
-     * 신규 사용자 유효성 검증
-     * @param user 검증할 사용자
-     * @throws IllegalArgumentException 이미 존재하는 이메일인 경우
-     */
-    private void validateNewUser(User user) {
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new IllegalArgumentException("이미 존재하는 이메일입니다: " + user.getEmail());
-        }
-    }
-
-    /**
-     * 이메일 유효성 검증
-     * @param email 검증할 이메일
-     * @throws IllegalArgumentException 이메일이 유효하지 않은 경우
-     */
-    private void validateEmail(String email) {
-        if (email == null || email.trim().isEmpty()) {
-            throw new IllegalArgumentException("이메일은 필수입니다");
-        }
     }
 } 

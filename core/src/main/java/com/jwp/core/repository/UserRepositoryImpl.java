@@ -10,126 +10,157 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
 
-import static com.jwp.core.domain.QUser.user;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import lombok.RequiredArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
- * QueryDsl을 사용한 사용자 레포지토리 구현체
- * 복잡한 동적 쿼리와 페이징을 처리합니다.
+ * 사용자 레포지토리 구현체
+ * QueryDsl을 사용한 복잡한 쿼리 작업을 처리합니다.
+ * 참고: 현재 QUser가 생성되지 않아 임시 구현입니다.
  */
+@RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepositoryCustom {
-
+    
+    private final EntityManager entityManager;
     private final JPAQueryFactory queryFactory;
-
+    
     /**
-     * QueryDsl 레포지토리 구현체 생성자
-     * @param queryFactory QueryDsl 쿼리 생성을 위한 팩토리
-     * @throws NullPointerException queryFactory가 null인 경우
+     * 생성자 (entityManager만 주입)
+     * @param entityManager JPA 엔티티 매니저
      */
-    public UserRepositoryImpl(JPAQueryFactory queryFactory) {
-        this.queryFactory = Objects.requireNonNull(queryFactory, "queryFactory must not be null");
+    public UserRepositoryImpl(EntityManager entityManager) {
+        this.entityManager = entityManager;
+        this.queryFactory = new JPAQueryFactory(entityManager);
     }
-
+    
     /**
-     * 이름으로 사용자 검색
-     * @param name 검색할 이름
+     * 이름에 특정 문자열이 포함된 사용자 조회 (페이징)
+     * @param name 검색할 이름 (부분 일치)
      * @param pageable 페이징 정보
-     * @return 검색된 사용자 목록 (페이징)
+     * @return 페이징된 사용자 목록
      */
     @Override
     public Page<User> findByNameContaining(String name, Pageable pageable) {
-        validatePageable(pageable);
-        return executeQuery(nameContains(name), pageable);
+        if (pageable == null) {
+            throw new IllegalArgumentException("페이징 정보는 필수입니다.");
+        }
+        
+        // JPQL로 직접 구현 (QueryDsl 대신)
+        String jpql = "SELECT u FROM User u WHERE u.name LIKE :name";
+        String countJpql = "SELECT COUNT(u) FROM User u WHERE u.name LIKE :name";
+        
+        TypedQuery<User> query = entityManager.createQuery(jpql, User.class);
+        TypedQuery<Long> countQuery = entityManager.createQuery(countJpql, Long.class);
+        
+        query.setParameter("name", "%" + name + "%");
+        countQuery.setParameter("name", "%" + name + "%");
+        
+        query.setFirstResult((int) pageable.getOffset());
+        query.setMaxResults(pageable.getPageSize());
+        
+        List<User> content = query.getResultList();
+        Long total = countQuery.getSingleResult();
+        
+        return new PageImpl<>(content, pageable, total);
     }
-
+    
     /**
-     * 조건에 따른 사용자 검색
+     * 조건에 맞는 사용자 검색 (페이징)
      * @param condition 검색 조건
      * @param pageable 페이징 정보
-     * @return 검색된 사용자 목록 (페이징)
+     * @return 페이징된 사용자 목록
      */
     @Override
     public Page<User> searchByCondition(UserSearchCondition condition, Pageable pageable) {
-        validatePageable(pageable);
-        Objects.requireNonNull(condition, "검색 조건이 null일 수 없습니다");
+        if (pageable == null) {
+            throw new IllegalArgumentException("페이징 정보는 필수입니다.");
+        }
         
-        Predicate[] predicates = buildPredicates(condition);
-        return executeQuery(predicates, pageable);
-    }
-
-    /**
-     * 검색 조건으로부터 Predicate 배열 생성
-     */
-    private Predicate[] buildPredicates(UserSearchCondition condition) {
-        return new Predicate[]{
-            emailEq(condition.getEmail()),
-            nameContains(condition.getName()),
-            createdAtBetween(condition.getFromDate(), condition.getToDate())
-        };
-    }
-
-    /**
-     * 단일 조건을 배열로 변환하여 공통 실행 메서드 호출
-     */
-    private Page<User> executeQuery(BooleanExpression condition, Pageable pageable) {
-        return executeQuery(new Predicate[]{condition}, pageable);
-    }
-
-    /**
-     * 쿼리 실행 로직
-     * @param predicates 검색 조건들 (null 값은 무시됨)
-     * @param pageable 페이징 정보
-     * @return 페이징된 검색 결과
-     */
-    private Page<User> executeQuery(Predicate[] predicates, Pageable pageable) {
-        // 컨텐츠 조회
-        List<User> content = queryFactory
-                .selectFrom(user)
-                .where(predicates)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        // 전체 카운트 조회
-        long total = queryFactory
-                .selectFrom(user)
-                .where(predicates)
-                .fetchCount();
-
+        // 조건이 없거나 모든 필드가 null인 경우
+        if (condition == null || condition.isEmpty()) {
+            return findAllUsers(pageable);
+        }
+        
+        // JPQL 쿼리와 파라미터 생성
+        StringBuilder jpql = new StringBuilder("SELECT u FROM User u WHERE 1=1");
+        StringBuilder countJpql = new StringBuilder("SELECT COUNT(u) FROM User u WHERE 1=1");
+        
+        if (StringUtils.hasText(condition.getEmail())) {
+            jpql.append(" AND u.email = :email");
+            countJpql.append(" AND u.email = :email");
+        }
+        
+        if (StringUtils.hasText(condition.getName())) {
+            jpql.append(" AND u.name LIKE :name");
+            countJpql.append(" AND u.name LIKE :name");
+        }
+        
+        if (condition.getFromDate() != null) {
+            jpql.append(" AND u.createdAt >= :fromDate");
+            countJpql.append(" AND u.createdAt >= :fromDate");
+        }
+        
+        if (condition.getToDate() != null) {
+            jpql.append(" AND u.createdAt <= :toDate");
+            countJpql.append(" AND u.createdAt <= :toDate");
+        }
+        
+        TypedQuery<User> query = entityManager.createQuery(jpql.toString(), User.class);
+        TypedQuery<Long> countQuery = entityManager.createQuery(countJpql.toString(), Long.class);
+        
+        // 파라미터 설정
+        if (StringUtils.hasText(condition.getEmail())) {
+            query.setParameter("email", condition.getEmail());
+            countQuery.setParameter("email", condition.getEmail());
+        }
+        
+        if (StringUtils.hasText(condition.getName())) {
+            query.setParameter("name", "%" + condition.getName() + "%");
+            countQuery.setParameter("name", "%" + condition.getName() + "%");
+        }
+        
+        if (condition.getFromDate() != null) {
+            query.setParameter("fromDate", condition.getFromDate());
+            countQuery.setParameter("fromDate", condition.getFromDate());
+        }
+        
+        if (condition.getToDate() != null) {
+            query.setParameter("toDate", condition.getToDate());
+            countQuery.setParameter("toDate", condition.getToDate());
+        }
+        
+        // 페이징 설정
+        query.setFirstResult((int) pageable.getOffset());
+        query.setMaxResults(pageable.getPageSize());
+        
+        List<User> content = query.getResultList();
+        Long total = countQuery.getSingleResult();
+        
         return new PageImpl<>(content, pageable, total);
     }
-
+    
     /**
-     * 페이징 정보 유효성 검증
+     * 모든 사용자 조회 (페이징)
+     * @param pageable 페이징 정보
+     * @return 페이징된 사용자 목록
      */
-    private void validatePageable(Pageable pageable) {
-        Objects.requireNonNull(pageable, "페이징 정보가 null일 수 없습니다");
-    }
-
-    /**
-     * 이메일 일치 조건
-     */
-    private BooleanExpression emailEq(String email) {
-        return StringUtils.hasText(email) ? user.email.eq(email) : null;
-    }
-
-    /**
-     * 이름 포함 조건
-     */
-    private BooleanExpression nameContains(String name) {
-        return StringUtils.hasText(name) ? user.name.contains(name) : null;
-    }
-
-    /**
-     * 생성일자 범위 조건
-     */
-    private BooleanExpression createdAtBetween(LocalDateTime fromDate, LocalDateTime toDate) {
-        if (fromDate == null || toDate == null) {
-            return null;
-        }
-        return user.createdAt.between(fromDate, toDate);
+    private Page<User> findAllUsers(Pageable pageable) {
+        String jpql = "SELECT u FROM User u";
+        String countJpql = "SELECT COUNT(u) FROM User u";
+        
+        TypedQuery<User> query = entityManager.createQuery(jpql, User.class);
+        TypedQuery<Long> countQuery = entityManager.createQuery(countJpql, Long.class);
+        
+        query.setFirstResult((int) pageable.getOffset());
+        query.setMaxResults(pageable.getPageSize());
+        
+        List<User> content = query.getResultList();
+        Long total = countQuery.getSingleResult();
+        
+        return new PageImpl<>(content, pageable, total);
     }
 } 
