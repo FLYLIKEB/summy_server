@@ -56,6 +56,34 @@ subprojects {
     tasks.named('test') {
         useJUnitPlatform()
     }
+    
+    // 단위 테스트 태스크 정의
+    task unitTest(type: Test) {
+        description = '단위 테스트만 실행합니다.'
+        group = 'verification'
+        
+        useJUnitPlatform {
+            includeTags 'unit'
+        }
+        
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
+    }
+    
+    // 통합 테스트 태스크 정의 
+    task integrationTest(type: Test) {
+        description = '통합 테스트만 실행합니다.'
+        group = 'verification'
+        
+        useJUnitPlatform {
+            includeTags 'integration'
+        }
+        
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
+    }
 }
 
 // core 모듈 관련 설정
