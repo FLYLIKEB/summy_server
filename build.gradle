@@ -87,15 +87,17 @@ project(':core') {
     }
     
     // Q클래스 생성 설정
+    def querydslDir = "$buildDir/generated/querydsl"
+    
     querydsl {
         jpa = true
-        querydslSourcesDir = "$buildDir/generated/querydsl"
+        querydslSourcesDir = querydslDir
     }
 
     sourceSets {
         main {
             java {
-                srcDir "$buildDir/generated/querydsl"
+                srcDir querydslDir
             }
         }
     }
@@ -106,6 +108,45 @@ project(':core') {
 
     tasks.named('compileJava') {
         dependsOn 'compileQuerydsl'
+    }
+    
+    // Q클래스만 생성하는 커스텀 태스크
+    tasks.register('generateQClass', JavaCompile) {
+        group = 'querydsl'
+        description = 'Querydsl Q클래스 파일만 생성합니다'
+        
+        source = sourceSets.main.java
+        classpath = configurations.compileClasspath
+        options.annotationProcessorPath = configurations.annotationProcessor
+        options.compilerArgs = [
+            "-proc:only",
+            "-processor", "com.querydsl.apt.jpa.JPAAnnotationProcessor"
+        ]
+        destinationDirectory = file(querydslDir)
+        
+        doFirst {
+            if (!querydslDir.exists()) {
+                logger.info("생성 디렉토리가 존재하지 않아 생성합니다: {}", querydslDir)
+                querydslDir.mkdirs()
+            }
+            logger.info("Querydsl Q클래스 생성을 시작합니다...")
+        }
+        
+        doLast {
+            logger.info("Querydsl Q클래스 생성이 완료되었습니다.")
+            logger.info("생성된 파일 위치: {}", querydslDir)
+            
+            // 생성된 Q클래스 파일 목록 출력
+            if (querydslDir.exists()) {
+                def qFiles = fileTree(querydslDir).matching {
+                    include "**/*Q*.java"
+                }
+                logger.info("생성된 Q클래스 파일 수: {}", qFiles.files.size())
+                qFiles.files.each { file ->
+                    logger.info(" - {}", file.name)
+                }
+            }
+        }
     }
 }
 
