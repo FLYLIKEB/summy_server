@@ -2,3 +2,9 @@
 
 // API 모듈 설정
 // 의존성 관리는 루트 build.gradle 파일을 참고하세요.
+
+// 테스트를 위한 추가 의존성
+dependencies {
+    testImplementation 'io.rest-assured:rest-assured:5.4.0'
+    testImplementation 'io.rest-assured:spring-mock-mvc:5.4.0'
+}
