@@ -83,12 +83,15 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
             builder.and(user.name.contains(condition.getName()));
         }
 
-        if (condition.getFromDate() != null && condition.getToDate() != null) {
-            builder.and(user.createdAt.between(condition.getFromDate(), condition.getToDate()));
-        } else if (condition.getFromDate() != null) {
-            builder.and(user.createdAt.goe(condition.getFromDate()));
-        } else if (condition.getToDate() != null) {
-            builder.and(user.createdAt.loe(condition.getToDate()));
+        // 날짜 범위 조건 적용
+        if (condition.getDateRange() != null && !condition.getDateRange().isEmpty()) {
+            if (condition.getFromDate() != null && condition.getToDate() != null) {
+                builder.and(user.createdAt.between(condition.getFromDate(), condition.getToDate()));
+            } else if (condition.getFromDate() != null) {
+                builder.and(user.createdAt.goe(condition.getFromDate()));
+            } else if (condition.getToDate() != null) {
+                builder.and(user.createdAt.loe(condition.getToDate()));
+            }
         }
 
         List<User> content = queryFactory.selectFrom(user).where(builder).offset(pageable.getOffset()).limit(pageable.getPageSize()).fetch();
