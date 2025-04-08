@@ -102,11 +102,12 @@ class DateRangeTest {
 
         LocalDateTime before = LocalDateTime.of(2022, 12, 31, 23, 59);
         LocalDateTime after = LocalDateTime.of(2023, 1, 1, 0, 0);
+        LocalDateTime futureDate = LocalDateTime.of(2023, 6, 1, 0, 0); // 명시적인 미래 날짜 사용
 
         // when & then
         assertThat(range.contains(before)).isFalse();
         assertThat(range.contains(after)).isTrue();
-        assertThat(range.contains(LocalDateTime.now())).isTrue(); // 현재 시간은 2023년 1월 1일 이후로 가정
+        assertThat(range.contains(futureDate)).isTrue(); // 명시적인 미래 날짜로 테스트
     }
 
     @Test
