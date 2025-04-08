@@ -10,7 +10,6 @@ import com.jwp.core.exception.user.UserDomainException;
 import com.jwp.core.repository.UserRepository;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 /**
  * 사용자 명령 서비스
@@ -18,11 +17,20 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @Transactional
-@RequiredArgsConstructor
 public class UserCommandService {
     
     private final UserRepository userRepository;
     private final UserQueryService userQueryService;
+    
+    /**
+     * 생성자
+     * @param userRepository 사용자 레포지토리
+     * @param userQueryService 사용자 조회 서비스
+     */
+    public UserCommandService(UserRepository userRepository, UserQueryService userQueryService) {
+        this.userRepository = userRepository;
+        this.userQueryService = userQueryService;
+    }
     
     /**
      * 사용자 생성

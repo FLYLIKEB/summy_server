@@ -12,8 +12,6 @@ import com.jwp.core.exception.user.UserDomainException;
 import com.jwp.core.repository.UserRepository;
 import com.jwp.core.repository.UserSearchCondition;
 
-import lombok.RequiredArgsConstructor;
-
 import java.util.Optional;
 
 /**
@@ -22,10 +20,17 @@ import java.util.Optional;
  */
 @Service
 @Transactional(readOnly = true)
-@RequiredArgsConstructor
 public class UserQueryService {
     
     private final UserRepository userRepository;
+    
+    /**
+     * 생성자
+     * @param userRepository 사용자 레포지토리
+     */
+    public UserQueryService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
     
     /**
      * 이메일로 사용자 조회
