@@ -8,6 +8,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.4' apply false
     id 'io.spring.dependency-management' version '1.1.7' apply false
+    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10' apply false
 }
 
 allprojects {
@@ -60,6 +61,8 @@ subprojects {
 
 // core 모듈 관련 설정
 project(':core') {
+    apply plugin: 'com.ewerk.gradle.plugins.querydsl'
+
     dependencies {
         // JPA
         implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -84,21 +87,25 @@ project(':core') {
     }
     
     // Q클래스 생성 설정
-    def querydslDir = "$buildDir/generated/querydsl"
-    
-    tasks.register('generateQuerydsl', JavaCompile) {
-        source = sourceSets.main.java
-        classpath = configurations.compileClasspath
-        options.annotationProcessorPath = configurations.annotationProcessor
-        options.generatedSourceOutputDirectory = file(querydslDir)
+    querydsl {
+        jpa = true
+        querydslSourcesDir = "$buildDir/generated/querydsl"
     }
-    
+
     sourceSets {
-        main.java.srcDir querydslDir
+        main {
+            java {
+                srcDir "$buildDir/generated/querydsl"
+            }
+        }
     }
-    
+
+    compileQuerydsl {
+        options.annotationProcessorPath = configurations.annotationProcessor
+    }
+
     tasks.named('compileJava') {
-        dependsOn 'generateQuerydsl'
+        dependsOn 'compileQuerydsl'
     }
 }
 
