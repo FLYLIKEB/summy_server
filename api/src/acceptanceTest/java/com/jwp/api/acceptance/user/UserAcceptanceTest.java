@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.jwp.api.acceptance.AcceptanceSteps.*;
@@ -113,6 +114,9 @@ class UserAcceptanceTest extends AcceptanceTest {
         // 결과 확인
         Map<String, Object> responseBody = response.body().as(Map.class);
         assertThat(responseBody.get("totalElements")).isEqualTo(2);
+        List<Map<String, Object>> content = (List<Map<String, Object>>) responseBody.get("content");
+        assertThat(content).hasSize(2);
+        assertThat(content).extracting("name").containsExactlyInAnyOrder("사용자1", "사용자2");
     }
 
     /**
