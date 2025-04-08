@@ -10,7 +10,7 @@ import com.jwp.core.domain.User;
  * QueryDsl을 사용한 복잡한 쿼리 작업을 처리합니다.
  */
 public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom {
-    
+
     /**
      * 이메일로 사용자 존재 여부 확인
      * @param email 확인할 이메일
@@ -24,4 +24,4 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
      * @return 조회된 사용자
      */
     User findByEmail(String email);
-} 
+}

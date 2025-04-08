@@ -1,4 +1,17 @@
-// api 모듈의 특정 설정은 루트 build.gradle에서 관리됩니다. 
+// api 모듈의 특정 설정은 루트 build.gradle에서 관리됩니다.
 
 // API 모듈 설정
-// 의존성 관리는 루트 build.gradle 파일을 참고하세요. 
+// 의존성 관리는 루트 build.gradle 파일을 참고하세요.
+
+// 테스트를 위한 추가 의존성
+dependencies {
+    // Spring Security 추가
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.security:spring-security-test'
+    
+    testImplementation 'io.rest-assured:rest-assured:5.4.0'
+    testImplementation 'io.rest-assured:spring-mock-mvc:5.4.0'
+
+    // Swagger 의존성 추가
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+}
