@@ -1,9 +1,11 @@
-package service;
+package com.jwp.core.service;
 
-import domain.User;
-import repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.jwp.core.domain.User;
+import com.jwp.core.repository.UserRepository;
+
 import jakarta.validation.Valid;
 import java.util.Objects;
 import java.util.Optional;

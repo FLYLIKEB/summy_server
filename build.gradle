@@ -87,17 +87,17 @@ project(':core') {
     }
     
     // Q클래스 생성 설정
-    def querydslDir = "$buildDir/generated/querydsl"
+    def querydslDir = new File("$buildDir/generated/querydsl")
     
     querydsl {
         jpa = true
-        querydslSourcesDir = querydslDir
+        querydslSourcesDir = querydslDir.absolutePath
     }
 
     sourceSets {
         main {
             java {
-                srcDir querydslDir
+                srcDir querydslDir.absolutePath
             }
         }
     }
@@ -122,7 +122,7 @@ project(':core') {
             "-proc:only",
             "-processor", "com.querydsl.apt.jpa.JPAAnnotationProcessor"
         ]
-        destinationDirectory = file(querydslDir)
+        destinationDirectory = querydslDir
         
         doFirst {
             if (!querydslDir.exists()) {

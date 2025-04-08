@@ -1,19 +1,20 @@
-package repository;
+package com.jwp.core.repository;
 
+import com.jwp.core.domain.User;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import domain.User;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
 
+import static com.jwp.core.domain.QUser.user;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-
-import static domain.QUser.user;
 
 /**
  * QueryDsl을 사용한 사용자 레포지토리 구현체
