@@ -1,6 +1,9 @@
 package com.jwp.core.repository;
 
 import com.jwp.core.exception.common.InvalidValueException;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import java.time.LocalDateTime;
 
@@ -8,19 +11,27 @@ import java.time.LocalDateTime;
  * 사용자 검색 조건
  * 다양한 조건으로 사용자를 검색할 때 사용되는 조건 객체입니다.
  */
+@Entity
 @Getter
 public class UserSearchCondition {
     /** 검색할 이메일 */
-    private final String email;
+    @Id
+    private String email;
     
     /** 검색할 이름 */
-    private final String name;
+    private String name;
     
     /** 검색 시작 일시 */
-    private final LocalDateTime fromDate;
+    private LocalDateTime fromDate;
     
     /** 검색 종료 일시 */
-    private final LocalDateTime toDate;
+    private LocalDateTime toDate;
+    
+    /**
+     * 기본 생성자 (JPA 요구사항)
+     */
+    protected UserSearchCondition() {
+    }
     
     /**
      * 검색 조건의 생성자
@@ -45,6 +56,7 @@ public class UserSearchCondition {
      * 모든 필드가 null인지 확인
      * @return 모든 필드가 null인 경우 true
      */
+    @Transient
     public boolean isEmpty() {
         return email == null && name == null && fromDate == null && toDate == null;
     }
