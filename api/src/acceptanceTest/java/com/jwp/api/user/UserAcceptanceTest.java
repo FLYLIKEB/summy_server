@@ -1,7 +1,5 @@
-package com.jwp.api.acceptance.user;
+package com.jwp.api.user;
 
-import com.jwp.api.acceptance.AcceptanceTest;
-import com.jwp.api.acceptance.DatabaseCleanup;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
@@ -9,11 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
+import com.jwp.api.AcceptanceTest;
+import com.jwp.api.DatabaseCleanup;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.jwp.api.acceptance.AcceptanceSteps.*;
+import static com.jwp.api.AcceptanceSteps.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -134,4 +135,4 @@ class UserAcceptanceTest extends AcceptanceTest {
 
         return 요청_POST(getUrl("/api/users"), params);
     }
-}
+} 

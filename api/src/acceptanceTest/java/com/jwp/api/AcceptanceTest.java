@@ -1,4 +1,4 @@
-package com.jwp.api.acceptance;
+package com.jwp.api;
 
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -23,7 +23,7 @@ public abstract class AcceptanceTest {
      * 랜덤으로 할당된 서버 포트
      */
     @LocalServerPort
-    private int port;
+    protected int port;
 
     /**
      * API 요청 명세
@@ -40,9 +40,9 @@ public abstract class AcceptanceTest {
         this.spec = new RequestSpecBuilder()
                 .setBaseUri("http://localhost")
                 .setPort(port)
-                .addFilter((requestSpec, responseSpec, ctx) -> {
-                    return ctx.next(requestSpec, responseSpec);
-                })
+                .addFilter(((request, response, chain) -> {
+                    return chain.next(request, response);
+                }))
                 .build();
 
         // 테스트 전 데이터 초기화
@@ -63,4 +63,4 @@ public abstract class AcceptanceTest {
     protected String getUrl(String path) {
         return "http://localhost:" + port + path;
     }
-}
+} 

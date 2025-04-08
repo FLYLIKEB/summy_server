@@ -1,7 +1,9 @@
-package com.jwp.api.acceptance;
+package com.jwp.api;
 
+import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.springframework.http.MediaType;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -11,97 +13,91 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * 인수 테스트 단계(Steps) 도우미 클래스
- * 인수 테스트에서 공통으로 사용되는 HTTP 요청 및 응답 처리 메서드를 제공합니다.
+ * 인수 테스트 단계 유틸리티
+ * 인수 테스트에서 자주 사용되는 HTTP 요청/응답 단계를 정의합니다.
  */
 public class AcceptanceSteps {
 
     /**
-     * HTTP GET 요청 수행
-     *
-     * @param url 요청 URL
+     * GET 요청 수행
+     * @param uri 요청 URI
      * @return API 응답
      */
-    public static ExtractableResponse<Response> 요청_GET(String url) {
+    public static ExtractableResponse<Response> 요청_GET(String uri) {
         return given().log().all()
                 .when()
-                .get(url)
+                .get(uri)
                 .then().log().all()
                 .extract();
     }
 
     /**
-     * HTTP GET 요청 수행 (쿼리 파라미터 포함)
-     *
-     * @param url 요청 URL
+     * 쿼리 파라미터를 포함한 GET 요청 수행
+     * @param uri 요청 URI
      * @param queryParams 쿼리 파라미터
      * @return API 응답
      */
-    public static ExtractableResponse<Response> 요청_GET(String url, Map<String, Object> queryParams) {
+    public static ExtractableResponse<Response> 요청_GET(String uri, Map<String, Object> queryParams) {
         return given().log().all()
                 .queryParams(queryParams)
                 .when()
-                .get(url)
+                .get(uri)
                 .then().log().all()
                 .extract();
     }
 
     /**
-     * HTTP POST 요청 수행
-     *
-     * @param url 요청 URL
-     * @param body 요청 본문
+     * POST 요청 수행
+     * @param uri 요청 URI
+     * @param params 요청 바디
      * @return API 응답
      */
-    public static ExtractableResponse<Response> 요청_POST(String url, Object body) {
+    public static ExtractableResponse<Response> 요청_POST(String uri, Object params) {
         return given().log().all()
-                .contentType("application/json")
-                .body(body)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
                 .when()
-                .post(url)
+                .post(uri)
                 .then().log().all()
                 .extract();
     }
 
     /**
-     * HTTP PUT 요청 수행
-     *
-     * @param url 요청 URL
-     * @param body 요청 본문
+     * PUT 요청 수행
+     * @param uri 요청 URI
+     * @param params 요청 바디
      * @return API 응답
      */
-    public static ExtractableResponse<Response> 요청_PUT(String url, Object body) {
+    public static ExtractableResponse<Response> 요청_PUT(String uri, Object params) {
         return given().log().all()
-                .contentType("application/json")
-                .body(body)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
                 .when()
-                .put(url)
+                .put(uri)
                 .then().log().all()
                 .extract();
     }
 
     /**
-     * HTTP DELETE 요청 수행
-     *
-     * @param url 요청 URL
+     * DELETE 요청 수행
+     * @param uri 요청 URI
      * @return API 응답
      */
-    public static ExtractableResponse<Response> 요청_DELETE(String url) {
+    public static ExtractableResponse<Response> 요청_DELETE(String uri) {
         return given().log().all()
                 .when()
-                .delete(url)
+                .delete(uri)
                 .then().log().all()
                 .extract();
     }
 
     /**
-     * 응답 상태코드 검증
-     *
+     * 응답 상태 코드 검증
      * @param response API 응답
-     * @param expectedStatus 기대하는 상태코드
+     * @param expectedStatusCode 기대하는 상태 코드
      */
-    public static void 응답_상태코드_검증(ExtractableResponse<Response> response, int expectedStatus) {
-        assertThat(response.statusCode()).isEqualTo(expectedStatus);
+    public static void 응답_상태코드_검증(ExtractableResponse<Response> response, int expectedStatusCode) {
+        assertThat(response.statusCode()).isEqualTo(expectedStatusCode);
     }
 
     /**
@@ -126,4 +122,4 @@ public class AcceptanceSteps {
         // Then
         then.accept(whenResult);
     }
-}
+} 
