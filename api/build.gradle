@@ -1,4 +1,4 @@
-// api 모듈의 특정 설정은 루트 build.gradle에서 관리됩니다. 
+// api 모듈의 특정 설정은 루트 build.gradle에서 관리됩니다.
 
 // API 모듈 설정
-// 의존성 관리는 루트 build.gradle 파일을 참고하세요. 
+// 의존성 관리는 루트 build.gradle 파일을 참고하세요.

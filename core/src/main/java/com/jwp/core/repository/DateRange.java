@@ -24,7 +24,7 @@ public class DateRange {
 
     /**
      * 날짜 범위 생성자
-     * 
+     *
      * @param from 시작일시
      * @param to 종료일시
      * @throws InvalidValueException 시작일시가 종료일시보다 나중인 경우
@@ -37,7 +37,7 @@ public class DateRange {
 
     /**
      * 날짜 범위 생성 팩토리 메서드
-     * 
+     *
      * @param from 시작일시
      * @param to 종료일시
      * @return 날짜 범위 객체
@@ -49,7 +49,7 @@ public class DateRange {
 
     /**
      * 비어있는 날짜 범위 생성
-     * 
+     *
      * @return 비어있는 날짜 범위 객체
      */
     public static DateRange empty() {
@@ -58,7 +58,7 @@ public class DateRange {
 
     /**
      * 날짜 범위 유효성 검증
-     * 
+     *
      * @param from 시작일시
      * @param to 종료일시
      * @throws InvalidValueException 시작일시가 종료일시보다 나중인 경우
@@ -72,7 +72,7 @@ public class DateRange {
 
     /**
      * 날짜 범위가 비어있는지 확인
-     * 
+     *
      * @return 시작일시와 종료일시가 모두 null인 경우 true
      */
     public boolean isEmpty() {
@@ -81,7 +81,7 @@ public class DateRange {
 
     /**
      * 특정 일시가 날짜 범위에 포함되는지 확인
-     * 
+     *
      * @param dateTime 확인할 일시
      * @return 날짜 범위에 포함되면 true
      */
@@ -109,4 +109,4 @@ public class DateRange {
     public String toString() {
         return String.format("DateRange{from=%s, to=%s}", from, to);
     }
-} 
+}

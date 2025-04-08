@@ -25,4 +25,4 @@ public class TestJpaConfig {
                 .setType(EmbeddedDatabaseType.H2)
                 .build();
     }
-} 
+}

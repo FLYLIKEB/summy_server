@@ -48,15 +48,15 @@ class UserAcceptanceTest extends AcceptanceTest {
 
         // then
         응답_상태코드_검증(response, HttpStatus.CREATED.value());
-        
+
         // 응답에서 사용자 ID 확인
         String location = response.header("Location");
         assertThat(location).isNotNull();
-        
+
         // 생성된 사용자 조회
         ExtractableResponse<Response> userResponse = 요청_GET(location);
         응답_상태코드_검증(userResponse, HttpStatus.OK.value());
-        
+
         Map<String, Object> responseBody = userResponse.body().as(Map.class);
         assertThat(responseBody.get("email")).isEqualTo("test@example.com");
         assertThat(responseBody.get("name")).isEqualTo("테스트사용자");
@@ -71,20 +71,20 @@ class UserAcceptanceTest extends AcceptanceTest {
         createParams.put("email", "update@example.com");
         createParams.put("name", "수정전사용자");
         createParams.put("password", "password123");
-        
+
         ExtractableResponse<Response> createResponse = 요청_POST(getUrl("/api/users"), createParams);
         String location = createResponse.header("Location");
-        
+
         // 2. 수정할 정보 준비
         Map<String, Object> updateParams = new HashMap<>();
         updateParams.put("name", "수정후사용자");
-        
+
         // when
         ExtractableResponse<Response> updateResponse = 요청_PUT(location, updateParams);
-        
+
         // then
         응답_상태코드_검증(updateResponse, HttpStatus.OK.value());
-        
+
         // 수정된 사용자 조회
         ExtractableResponse<Response> userResponse = 요청_GET(location);
         Map<String, Object> responseBody = userResponse.body().as(Map.class);
@@ -99,17 +99,17 @@ class UserAcceptanceTest extends AcceptanceTest {
         createTestUser("user1@example.com", "사용자1");
         createTestUser("user2@example.com", "사용자2");
         createTestUser("admin@example.com", "관리자");
-        
+
         // when
         // 이름에 "사용자"가 포함된 사용자 검색
         Map<String, Object> queryParams = new HashMap<>();
         queryParams.put("name", "사용자");
-        
+
         ExtractableResponse<Response> response = 요청_GET(getUrl("/api/users"), queryParams);
-        
+
         // then
         응답_상태코드_검증(response, HttpStatus.OK.value());
-        
+
         // 결과 확인
         Map<String, Object> responseBody = response.body().as(Map.class);
         assertThat(responseBody.get("totalElements")).isEqualTo(2);
@@ -117,7 +117,7 @@ class UserAcceptanceTest extends AcceptanceTest {
 
     /**
      * 테스트 사용자 생성
-     * 
+     *
      * @param email 이메일
      * @param name 이름
      * @return 생성된 사용자의 API 응답
@@ -127,7 +127,7 @@ class UserAcceptanceTest extends AcceptanceTest {
         params.put("email", email);
         params.put("name", name);
         params.put("password", "password123");
-        
+
         return 요청_POST(getUrl("/api/users"), params);
     }
-} 
+}

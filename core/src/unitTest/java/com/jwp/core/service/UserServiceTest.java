@@ -21,17 +21,17 @@ import static org.mockito.ArgumentMatchers.any;
 @DisplayName("UserService 테스트")
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
-    
+
     @InjectMocks
     private UserService userService;
-    
+
     @Mock
     private UserRepository userRepository;
 
     @Nested
     @DisplayName("사용자 생성 시")
     class CreateUser {
-        
+
         @Test
         @DisplayName("새로운 이메일로 가입하면 성공한다")
         void createUser_WhenNewEmail_ThenSuccess() {
@@ -39,24 +39,24 @@ class UserServiceTest {
             User user = createTestUser("test@example.com");
             given(userRepository.existsByEmail(user.getEmail())).willReturn(false);
             given(userRepository.save(any(User.class))).willReturn(user);
-            
+
             // When
             User savedUser = userService.createUser(user);
-            
+
             // Then
             assertThat(savedUser)
                     .isNotNull()
                     .extracting("email", "name")
                     .containsExactly(user.getEmail(), user.getName());
         }
-        
+
         @Test
         @DisplayName("중복된 이메일로 가입하면 예외가 발생한다")
         void createUser_WhenDuplicateEmail_ThenThrowException() {
             // Given
             User user = createTestUser("test@example.com");
             given(userRepository.existsByEmail(user.getEmail())).willReturn(true);
-            
+
             // When & Then
             assertThatThrownBy(() -> userService.createUser(user))
                     .isInstanceOf(IllegalArgumentException.class)
@@ -67,17 +67,17 @@ class UserServiceTest {
     @Nested
     @DisplayName("사용자 조회 시")
     class FindUser {
-        
+
         @Test
         @DisplayName("존재하는 이메일로 조회하면 사용자를 반환한다")
         void findByEmail_WhenUserExists_ThenReturnUser() {
             // Given
             User user = createTestUser("test@example.com");
             given(userRepository.findByEmail(user.getEmail())).willReturn(user);
-            
+
             // When
             Optional<User> foundUser = userService.findByEmail(user.getEmail());
-            
+
             // Then
             assertThat(foundUser)
                     .isPresent()
@@ -94,4 +94,4 @@ class UserServiceTest {
                 .password("password123")
                 .build();
     }
-} 
+}

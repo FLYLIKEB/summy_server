@@ -17,13 +17,13 @@ import java.time.LocalDateTime;
 public class UserSearchCondition {
     /** 검색할 이메일 */
     private String email;
-    
+
     /** 검색할 이름 */
     private String name;
-    
+
     /** 검색 날짜 범위 */
     private DateRange dateRange = DateRange.empty();
-    
+
     /**
      * 검색 조건의 생성자
      * 롬복의 @Builder를 통해 생성하는 것을 권장합니다.
@@ -34,7 +34,7 @@ public class UserSearchCondition {
         this.name = name;
         this.dateRange = dateRange != null ? dateRange : DateRange.empty();
     }
-    
+
     /**
      * fromDate 설정을 위한 커스텀 빌더 메서드
      * @param fromDate 검색 시작 일시
@@ -43,7 +43,7 @@ public class UserSearchCondition {
     public static UserSearchConditionBuilder fromDate(LocalDateTime fromDate) {
         return builder().dateRange(DateRange.of(fromDate, null));
     }
-    
+
     /**
      * toDate 설정을 위한 커스텀 빌더 메서드
      * @param toDate 검색 종료 일시
@@ -52,7 +52,7 @@ public class UserSearchCondition {
     public static UserSearchConditionBuilder toDate(LocalDateTime toDate) {
         return builder().dateRange(DateRange.of(null, toDate));
     }
-    
+
     /**
      * dateRange 설정을 위한 커스텀 빌더 메서드
      * @param fromDate 검색 시작 일시
@@ -62,7 +62,7 @@ public class UserSearchCondition {
     public static UserSearchConditionBuilder dateRange(LocalDateTime fromDate, LocalDateTime toDate) {
         return builder().dateRange(DateRange.of(fromDate, toDate));
     }
-    
+
     /**
      * 날짜 범위를 직접 지정하는 정적 팩토리 메서드
      * @param email 이메일
@@ -78,7 +78,7 @@ public class UserSearchCondition {
                 .dateRange(DateRange.of(fromDate, toDate))
                 .build();
     }
-    
+
     /**
      * 검색 시작 일시 getter
      * @return 검색 시작 일시
@@ -86,7 +86,7 @@ public class UserSearchCondition {
     public LocalDateTime getFromDate() {
         return dateRange != null ? dateRange.getFrom() : null;
     }
-    
+
     /**
      * 검색 종료 일시 getter
      * @return 검색 종료 일시
@@ -94,14 +94,14 @@ public class UserSearchCondition {
     public LocalDateTime getToDate() {
         return dateRange != null ? dateRange.getTo() : null;
     }
-    
+
     /**
      * 모든 필드가 비어있는지 확인
      * @return 모든 필드가 비어있는 경우 true
      */
     public boolean isEmpty() {
-        return StringUtils.isEmpty(this.email) && 
-               StringUtils.isEmpty(this.name) && 
+        return StringUtils.isEmpty(this.email) &&
+               StringUtils.isEmpty(this.name) &&
                (dateRange == null || dateRange.isEmpty());
     }
 }

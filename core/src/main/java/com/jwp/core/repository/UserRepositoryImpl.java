@@ -113,4 +113,4 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
         return new PageImpl<>(content, pageable, totalCount != null ? totalCount : 0L);
     }
-} 
+}
