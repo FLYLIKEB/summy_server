@@ -34,6 +34,23 @@ subprojects {
         compileOnly {
             extendsFrom annotationProcessor
         }
+        unitTestImplementation {
+            extendsFrom testImplementation
+        }
+        integrationTestImplementation {
+            extendsFrom testImplementation
+        }
+    }
+    
+    sourceSets {
+        unitTest {
+            compileClasspath += sourceSets.main.output
+            runtimeClasspath += sourceSets.main.output
+        }
+        integrationTest {
+            compileClasspath += sourceSets.main.output
+            runtimeClasspath += sourceSets.main.output
+        }
     }
     
     dependencies {
@@ -51,6 +68,8 @@ subprojects {
         
         // Test
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        unitTestImplementation 'org.springframework.boot:spring-boot-starter-test'
+        integrationTestImplementation 'org.springframework.boot:spring-boot-starter-test'
     }
     
     tasks.named('test') {
@@ -62,9 +81,8 @@ subprojects {
         description = '단위 테스트만 실행합니다.'
         group = 'verification'
         
-        useJUnitPlatform {
-            includeTags 'unit'
-        }
+        testClassesDirs = sourceSets.unitTest.output.classesDirs
+        classpath = sourceSets.unitTest.runtimeClasspath
         
         testLogging {
             events "passed", "skipped", "failed"
@@ -76,9 +94,8 @@ subprojects {
         description = '통합 테스트만 실행합니다.'
         group = 'verification'
         
-        useJUnitPlatform {
-            includeTags 'integration'
-        }
+        testClassesDirs = sourceSets.integrationTest.output.classesDirs
+        classpath = sourceSets.integrationTest.runtimeClasspath
         
         testLogging {
             events "passed", "skipped", "failed"
