@@ -10,7 +10,6 @@ import com.jwp.core.exception.user.UserDomainException;
 import com.jwp.core.repository.UserSearchCondition;
 import com.jwp.core.service.UserCommandService;
 import com.jwp.core.service.UserQueryService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,11 +20,20 @@ import org.springframework.transaction.annotation.Transactional;
  * 컨트롤러와 도메인 서비스 계층 사이의 변환 작업을 담당합니다.
  */
 @Service
-@RequiredArgsConstructor
 public class UserApiService {
 
     private final UserCommandService userCommandService;
     private final UserQueryService userQueryService;
+    
+    /**
+     * 생성자
+     * @param userCommandService 사용자 명령 서비스
+     * @param userQueryService 사용자 조회 서비스
+     */
+    public UserApiService(UserCommandService userCommandService, UserQueryService userQueryService) {
+        this.userCommandService = userCommandService;
+        this.userQueryService = userQueryService;
+    }
 
     /**
      * 사용자 생성
