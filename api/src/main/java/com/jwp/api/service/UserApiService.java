@@ -9,6 +9,7 @@ import com.jwp.core.exception.ErrorCode;
 import com.jwp.core.repository.UserSearchCondition;
 import com.jwp.core.service.UserCommandService;
 import com.jwp.core.service.UserQueryService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 사용자 API 서비스
  * 컨트롤러와 도메인 서비스 계층 사이의 변환 작업을 담당합니다.
  */
+@Slf4j
 @Service
 public class UserApiService {
 
@@ -109,8 +111,8 @@ public class UserApiService {
         try {
             return userQueryService.searchUsers(condition, pageable);
         } catch (Exception e) {
-            // 로깅 추가 (로깅 프레임워크 사용 권장)
-            System.err.println("사용자 목록 조회 실패: " + e.getMessage());
+            // 표준 로깅 프레임워크 사용
+            log.error("사용자 목록 조회 실패: {}", e.getMessage(), e);
             throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "사용자 목록 조회 중 오류가 발생했습니다.");
         }
     }
