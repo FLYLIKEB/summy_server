@@ -1,5 +1,6 @@
 package com.jwp.core.repository;
 
+import com.jwp.core.exception.common.InvalidValueException;
 import lombok.Getter;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -103,11 +104,12 @@ public class UserSearchCondition {
          * @param fromDate 검색 시작 일시
          * @param toDate 검색 종료 일시
          * @return 빌더 인스턴스
-         * @throws IllegalArgumentException fromDate가 toDate보다 나중인 경우
+         * @throws InvalidValueException fromDate가 toDate보다 나중인 경우
          */
         public Builder dateRange(LocalDateTime fromDate, LocalDateTime toDate) {
             if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
-                throw new IllegalArgumentException("시작 일시는 종료 일시보다 이전이어야 합니다");
+                throw new InvalidValueException("dateRange", 
+                    String.format("시작 일시(%s)는 종료 일시(%s)보다 이전이어야 합니다", fromDate, toDate));
             }
             this.fromDate = fromDate;
             this.toDate = toDate;
