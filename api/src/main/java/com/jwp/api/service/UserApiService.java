@@ -2,11 +2,9 @@ package com.jwp.api.service;
 
 import com.jwp.api.dto.request.UserCreateRequest;
 import com.jwp.api.dto.request.UserUpdateRequest;
-import com.jwp.api.dto.response.UserResponse;
 import com.jwp.core.domain.User;
 import com.jwp.core.exception.BusinessException;
 import com.jwp.core.exception.ErrorCode;
-import com.jwp.core.exception.user.UserDomainException;
 import com.jwp.core.repository.UserSearchCondition;
 import com.jwp.core.service.UserCommandService;
 import com.jwp.core.service.UserQueryService;
