@@ -19,7 +19,6 @@ import java.util.List;
 public class UserRepositoryImpl implements UserRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
-    private final EntityManager entityManager;
 
     /**
      * 생성자
@@ -27,7 +26,6 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
      * @param entityManager JPA 엔티티 매니저
      */
     public UserRepositoryImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
         this.queryFactory = new JPAQueryFactory(entityManager);
     }
 
