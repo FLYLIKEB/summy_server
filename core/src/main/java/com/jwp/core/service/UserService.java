@@ -9,7 +9,6 @@ import com.jwp.core.domain.User;
 import com.jwp.core.repository.UserSearchCondition;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
 
@@ -21,11 +20,20 @@ import java.util.Optional;
  */
 @Service
 @Deprecated
-@RequiredArgsConstructor
 public class UserService {
     
     private final UserCommandService commandService;
     private final UserQueryService queryService;
+    
+    /**
+     * 생성자
+     * @param commandService 사용자 명령 서비스
+     * @param queryService 사용자 조회 서비스
+     */
+    public UserService(UserCommandService commandService, UserQueryService queryService) {
+        this.commandService = commandService;
+        this.queryService = queryService;
+    }
     
     /**
      * 이메일로 사용자 조회
