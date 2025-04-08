@@ -32,7 +32,6 @@ public abstract class AcceptanceTest {
 
     /**
      * 테스트 실행 전 설정 초기화
-     * REST Assured 설정 및 문서화 설정을 초기화합니다.
      */
     @BeforeEach
     void setUp() {
