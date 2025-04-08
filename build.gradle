@@ -138,6 +138,71 @@ subprojects {
         }
     }
     
+    // 모든 테스트 실행 태스크
+    task allTests(type: Test) {
+        description = '단위 테스트, 통합 테스트, 인수 테스트를 모두 실행합니다.'
+        group = 'verification'
+        
+        useJUnitPlatform()
+        
+        // 모든 테스트 소스셋을 포함
+        Set<File> allClassesDirs = new HashSet<>()
+        Set<File> allResourcesDirs = new HashSet<>()
+        
+        // 기본 테스트 소스셋 추가
+        allClassesDirs.addAll(sourceSets.test.output.classesDirs.files)
+        allResourcesDirs.addAll(sourceSets.test.output.resourcesDir)
+        
+        // 단위 테스트 소스셋 추가
+        if (sourceSets.findByName('unitTest')) {
+            allClassesDirs.addAll(sourceSets.unitTest.output.classesDirs.files)
+            
+            if (sourceSets.unitTest.output.resourcesDir) {
+                allResourcesDirs.add(sourceSets.unitTest.output.resourcesDir)
+            }
+        }
+        
+        // 통합 테스트 소스셋 추가
+        if (sourceSets.findByName('integrationTest')) {
+            allClassesDirs.addAll(sourceSets.integrationTest.output.classesDirs.files)
+            
+            if (sourceSets.integrationTest.output.resourcesDir) {
+                allResourcesDirs.add(sourceSets.integrationTest.output.resourcesDir)
+            }
+        }
+        
+        // 인수 테스트 소스셋 추가
+        if (sourceSets.findByName('acceptanceTest')) {
+            allClassesDirs.addAll(sourceSets.acceptanceTest.output.classesDirs.files)
+            
+            if (sourceSets.acceptanceTest.output.resourcesDir) {
+                allResourcesDirs.add(sourceSets.acceptanceTest.output.resourcesDir)
+            }
+        }
+        
+        // 모든 클래스와 리소스를 테스트 실행에 포함
+        testClassesDirs = files(allClassesDirs)
+        classpath = sourceSets.test.runtimeClasspath + 
+                    (sourceSets.findByName('unitTest') ? sourceSets.unitTest.runtimeClasspath : files()) +
+                    (sourceSets.findByName('integrationTest') ? sourceSets.integrationTest.runtimeClasspath : files()) +
+                    (sourceSets.findByName('acceptanceTest') ? sourceSets.acceptanceTest.runtimeClasspath : files())
+        
+        testLogging {
+            events "passed", "skipped", "failed"
+            showStandardStreams = true
+            exceptionFormat = 'full'
+        }
+        
+        // 테스트 결과 요약 출력
+        afterSuite { desc, result ->
+            if (!desc.parent) {
+                println "\n테스트 결과: ${result.resultType} (${result.testCount} 테스트, " +
+                        "${result.successfulTestCount} 성공, ${result.failedTestCount} 실패, " +
+                        "${result.skippedTestCount} 스킵)"
+            }
+        }
+    }
+    
     // 중복 파일 처리 전략 설정
     tasks.withType(ProcessResources) {
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
@@ -241,5 +306,79 @@ project(':api') {
         // 인수 테스트 추가 의존성
         acceptanceTestImplementation 'io.rest-assured:spring-mock-mvc:5.4.0'
         acceptanceTestImplementation 'com.fasterxml.jackson.core:jackson-databind'
+        acceptanceTestImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+        acceptanceTestImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
+    }
+}
+
+// 모든 서브프로젝트의 테스트를 실행하는 루트 프로젝트 태스크
+task allProjectTests {
+    description = '모든 서브프로젝트의 전체 테스트를 실행합니다.'
+    group = 'verification'
+    
+    dependsOn subprojects.collect { it.tasks.withType(Test) }
+    
+    doLast {
+        println "\n모든 프로젝트의 테스트가 완료되었습니다."
+    }
+}
+
+// 모든 서브프로젝트의 기본 테스트만 실행하는 태스크
+task testAll {
+    description = '모든 서브프로젝트의 기본 테스트를 실행합니다.'
+    group = 'verification'
+    
+    dependsOn subprojects.collect { it.tasks.named('test') }
+    
+    doLast {
+        println "\n모든 프로젝트의 기본 테스트가 완료되었습니다."
+    }
+}
+
+// 모든 서브프로젝트의 통합 테스트만 실행하는 태스크
+task integrationTestAll {
+    description = '모든 서브프로젝트의 통합 테스트를 실행합니다.'
+    group = 'verification'
+    
+    dependsOn subprojects.collect { it.tasks.findByName('integrationTest') }.findAll { it != null }
+    
+    doLast {
+        println "\n모든 프로젝트의 통합 테스트가 완료되었습니다."
+    }
+}
+
+// 모든 서브프로젝트의 단위 테스트만 실행하는 태스크
+task unitTestAll {
+    description = '모든 서브프로젝트의 단위 테스트를 실행합니다.'
+    group = 'verification'
+    
+    dependsOn subprojects.collect { it.tasks.findByName('unitTest') }.findAll { it != null }
+    
+    doLast {
+        println "\n모든 프로젝트의 단위 테스트가 완료되었습니다."
+    }
+}
+
+// 모든 서브프로젝트의 인수 테스트만 실행하는 태스크
+task acceptanceTestAll {
+    description = '모든 서브프로젝트의 인수 테스트를 실행합니다.'
+    group = 'verification'
+    
+    dependsOn subprojects.collect { it.tasks.findByName('acceptanceTest') }.findAll { it != null }
+    
+    doLast {
+        println "\n모든 프로젝트의 인수 테스트가 완료되었습니다."
+    }
+}
+
+// 모든 서브프로젝트의 모든 종류의 테스트를 실행하는 태스크
+task allTestsAll {
+    description = '모든 서브프로젝트의 모든 종류의 테스트를 실행합니다.'
+    group = 'verification'
+    
+    dependsOn subprojects.collect { it.tasks.findByName('allTests') }.findAll { it != null }
+    
+    doLast {
+        println "\n모든 프로젝트의 전체 테스트가 완료되었습니다."
     }
 }
