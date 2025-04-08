@@ -2,6 +2,7 @@ package com.jwp.core;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
@@ -12,6 +13,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @ComponentScan(basePackages = "com.jwp.core")
 @EnableJpaRepositories(basePackages = "com.jwp.core.repository")
+@EntityScan(basePackages = "com.jwp.core.domain")
 public class CoreTestApplication {
     
     public static void main(String[] args) {
