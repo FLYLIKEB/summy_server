@@ -50,6 +50,12 @@ subprojects {
         integrationTest {
             compileClasspath += sourceSets.main.output
             runtimeClasspath += sourceSets.main.output
+            java {
+                srcDir 'src/integrationTest/java'
+            }
+            resources {
+                srcDir 'src/integrationTest/resources'
+            }
         }
     }
     
@@ -94,12 +100,18 @@ subprojects {
         description = '통합 테스트만 실행합니다.'
         group = 'verification'
         
+        useJUnitPlatform()
         testClassesDirs = sourceSets.integrationTest.output.classesDirs
         classpath = sourceSets.integrationTest.runtimeClasspath
         
         testLogging {
             events "passed", "skipped", "failed"
         }
+    }
+    
+    // 중복 파일 처리 전략 설정
+    tasks.withType(ProcessResources) {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }
 }
 

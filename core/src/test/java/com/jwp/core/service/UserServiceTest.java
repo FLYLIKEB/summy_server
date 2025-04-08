@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.jwp.core.domain.User;
-import com.jwp.core.repository.UserRepository;
+import com.jwp.core.domain.UserStatus;
 
 import java.util.Optional;
 
@@ -28,7 +28,10 @@ class UserServiceTest {
     private UserService userService;
     
     @Mock
-    private UserRepository userRepository;
+    private UserCommandService commandService;
+    
+    @Mock
+    private UserQueryService queryService;
 
     @Nested
     @DisplayName("사용자 생성 시")
@@ -39,8 +42,7 @@ class UserServiceTest {
         void createUser_WhenNewEmail_ThenSuccess() {
             // Given
             User user = createTestUser("test@example.com");
-            given(userRepository.existsByEmail(user.getEmail())).willReturn(false);
-            given(userRepository.save(any(User.class))).willReturn(user);
+            given(commandService.createUser(any(User.class))).willReturn(user);
             
             // When
             User savedUser = userService.createUser(user);
@@ -57,7 +59,7 @@ class UserServiceTest {
         void createUser_WhenDuplicateEmail_ThenThrowException() {
             // Given
             User user = createTestUser("test@example.com");
-            given(userRepository.existsByEmail(user.getEmail())).willReturn(true);
+            given(commandService.createUser(any(User.class))).willThrow(new IllegalArgumentException("이미 존재하는 이메일입니다."));
             
             // When & Then
             assertThatThrownBy(() -> userService.createUser(user))
@@ -75,7 +77,7 @@ class UserServiceTest {
         void findByEmail_WhenUserExists_ThenReturnUser() {
             // Given
             User user = createTestUser("test@example.com");
-            given(userRepository.findByEmail(user.getEmail())).willReturn(user);
+            given(queryService.findByEmail(user.getEmail())).willReturn(Optional.of(user));
             
             // When
             Optional<User> foundUser = userService.findByEmail(user.getEmail());
@@ -94,6 +96,7 @@ class UserServiceTest {
                 .email(email)
                 .name("Test User")
                 .password("password123")
+                .status(UserStatus.ACTIVE)
                 .build();
     }
 } 
