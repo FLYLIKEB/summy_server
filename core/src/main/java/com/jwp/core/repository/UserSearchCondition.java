@@ -3,7 +3,6 @@ package com.jwp.core.repository;
 import com.jwp.core.exception.common.InvalidValueException;
 import lombok.Getter;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 /**
  * 사용자 검색 조건
