@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+CQRS, 서비스 추상화 등 클린코드 기반 동작.
+매번 주석들이 달려야 함.
+테스트코드 함께 수정
