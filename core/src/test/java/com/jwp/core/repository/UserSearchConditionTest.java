@@ -26,8 +26,7 @@ class UserSearchConditionTest {
         UserSearchCondition condition = UserSearchCondition.builder()
                 .email(email)
                 .name(name)
-                .fromDate(fromDate)
-                .toDate(toDate)
+                .dateRange(DateRange.of(fromDate, toDate))
                 .build();
         
         // then
@@ -46,8 +45,7 @@ class UserSearchConditionTest {
         LocalDateTime toDate = LocalDateTime.of(2022, 12, 31, 23, 59);
         
         // when
-        UserSearchCondition condition = UserSearchCondition.builder()
-                .dateRange(fromDate, toDate)
+        UserSearchCondition condition = UserSearchCondition.dateRange(fromDate, toDate)
                 .build();
         
         // then
@@ -63,7 +61,7 @@ class UserSearchConditionTest {
         LocalDateTime toDate = LocalDateTime.of(2022, 1, 1, 0, 0);
         
         // when & then
-        assertThatThrownBy(() -> UserSearchCondition.builder().dateRange(fromDate, toDate))
+        assertThatThrownBy(() -> UserSearchCondition.dateRange(fromDate, toDate))
                 .isInstanceOf(InvalidValueException.class)
                 .hasMessageContaining("시작 일시");
     }
@@ -84,7 +82,7 @@ class UserSearchConditionTest {
         // given & when
         UserSearchCondition emailOnly = UserSearchCondition.builder().email("test@example.com").build();
         UserSearchCondition nameOnly = UserSearchCondition.builder().name("테스트").build();
-        UserSearchCondition dateOnly = UserSearchCondition.builder().fromDate(LocalDateTime.now()).build();
+        UserSearchCondition dateOnly = UserSearchCondition.fromDate(LocalDateTime.now()).build();
         
         // then
         assertThat(emailOnly.isEmpty()).isFalse();
@@ -104,8 +102,8 @@ class UserSearchConditionTest {
         // when
         UserSearchCondition emailCondition = UserSearchCondition.builder().email(email).build();
         UserSearchCondition nameCondition = UserSearchCondition.builder().name(name).build();
-        UserSearchCondition fromDateCondition = UserSearchCondition.builder().fromDate(fromDate).build();
-        UserSearchCondition toDateCondition = UserSearchCondition.builder().toDate(toDate).build();
+        UserSearchCondition fromDateCondition = UserSearchCondition.fromDate(fromDate).build();
+        UserSearchCondition toDateCondition = UserSearchCondition.toDate(toDate).build();
         
         // then
         assertThat(emailCondition.getEmail()).isEqualTo(email);
