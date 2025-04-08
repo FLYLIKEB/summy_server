@@ -10,6 +10,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  */
 @Configuration
 @EnableJpaAuditing // JPA Auditing 활성화 (생성일시, 수정일시 자동 관리)
-@EnableJpaRepositories(basePackages = {"repository"}) // JPA 레포지토리 스캔 경로
+@EnableJpaRepositories(basePackages = {"com.jwp.core.repository"}) // JPA 레포지토리 스캔 경로
 public class JpaConfig {
 } 

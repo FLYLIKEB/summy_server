@@ -1,4 +1,4 @@
-package unit.service;
+package com.jwp.core.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -10,7 +10,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.jwp.core.domain.User;
 import com.jwp.core.repository.UserRepository;
-import com.jwp.core.service.UserService;
 
 import java.util.Optional;
 
