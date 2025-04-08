@@ -50,11 +50,28 @@ public class UserCommandService {
     }
 
     /**
-     * 사용자 정보 업데이트
-     * @param email 대상 사용자 이메일
+     * 사용자 정보 업데이트 (ID 기반)
+     * @param userId 대상 사용자 ID
      * @param newName 새로운 이름
      * @return 업데이트된 사용자
      */
+    public User updateUserInfo(Long userId, String newName) {
+        validateUserId(userId);
+        validateName(newName);
+
+        User user = userQueryService.findById(userId);
+        user.update(newName);
+        return userRepository.save(user);
+    }
+
+    /**
+     * 이메일로 사용자 정보 업데이트 (이전 버전과의 호환성 유지용)
+     * @param email 대상 사용자 이메일
+     * @param newName 새로운 이름
+     * @return 업데이트된 사용자
+     * @deprecated ID 기반 메서드 사용 권장
+     */
+    @Deprecated
     public User updateUserInfo(String email, String newName) {
         validateEmail(email);
         validateName(newName);
@@ -86,9 +103,21 @@ public class UserCommandService {
     }
 
     /**
-     * 사용자 삭제
-     * @param email 삭제할 사용자 이메일
+     * 사용자 삭제 (ID 기반)
+     * @param userId 삭제할 사용자 ID
      */
+    public void deleteUser(Long userId) {
+        validateUserId(userId);
+        User user = userQueryService.findById(userId);
+        userRepository.delete(user);
+    }
+
+    /**
+     * 이메일로 사용자 삭제 (이전 버전과의 호환성 유지용)
+     * @param email 삭제할 사용자 이메일
+     * @deprecated ID 기반 메서드 사용 권장
+     */
+    @Deprecated
     public void deleteUser(String email) {
         validateEmail(email);
 
@@ -101,6 +130,12 @@ public class UserCommandService {
     }
 
     // 유효성 검증 메소드
+    private void validateUserId(Long userId) {
+        if (userId == null) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "사용자 ID는 필수입니다.");
+        }
+    }
+
     private void validateEmail(String email) {
         if (email == null || email.isBlank()) {
             throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "이메일은 필수입니다.");

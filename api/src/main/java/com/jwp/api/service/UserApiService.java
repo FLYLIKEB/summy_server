@@ -2,6 +2,7 @@ package com.jwp.api.service;
 
 import com.jwp.api.dto.request.UserCreateRequest;
 import com.jwp.api.dto.request.UserUpdateRequest;
+import com.jwp.api.exception.UserNotFoundException;
 import com.jwp.core.domain.User;
 import com.jwp.core.exception.BusinessException;
 import com.jwp.core.exception.ErrorCode;
@@ -68,7 +69,7 @@ public class UserApiService {
      * 사용자 조회
      * @param userId 사용자 ID
      * @return 사용자 정보
-     * @throws BusinessException 사용자를 찾을 수 없는 경우
+     * @throws UserNotFoundException 사용자를 찾을 수 없는 경우
      */
     @Transactional(readOnly = true)
     public User findUser(Long userId) {
@@ -77,11 +78,14 @@ public class UserApiService {
         }
         
         try {
-            return userQueryService.findById(userId);
+            User user = userQueryService.findById(userId);
+            if (user == null) {
+                throw new UserNotFoundException(userId);
+            }
+            return user;
         } catch (BusinessException e) {
-            // 로깅 추가 (로깅 프레임워크 사용 권장)
-            System.err.println("사용자 조회 실패: " + e.getMessage());
-            throw e;
+            // 비즈니스 예외를 UserNotFoundException으로 변환
+            throw new UserNotFoundException(userId);
         }
     }
 
@@ -124,8 +128,11 @@ public class UserApiService {
             throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "수정 명령은 필수입니다.");
         }
         
-        User user = findUser(userId);
-        return userCommandService.updateUserInfo(user.getEmail(), command.name());
+        // 사용자 존재 확인 (예외 발생 시 UserNotFoundException이 발생)
+        findUser(userId);
+        
+        // ID 기반 사용자 정보 업데이트
+        return userCommandService.updateUserInfo(userId, command.name());
     }
 
     /**
@@ -135,7 +142,10 @@ public class UserApiService {
      */
     @Transactional
     public void deleteUser(Long userId) {
-        User user = findUser(userId);
-        userCommandService.deleteUser(user.getEmail());
+        // 사용자 존재 확인 (예외 발생 시 UserNotFoundException이 발생)
+        findUser(userId);
+        
+        // ID 기반 사용자 삭제
+        userCommandService.deleteUser(userId);
     }
 } 
