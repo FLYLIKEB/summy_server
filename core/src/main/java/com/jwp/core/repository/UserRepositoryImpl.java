@@ -2,6 +2,7 @@ package com.jwp.core.repository;
 
 import com.jwp.core.domain.QUser;
 import com.jwp.core.domain.User;
+import com.jwp.core.exception.common.InvalidValueException;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -39,7 +40,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     @Override
     public Page<User> findByNameContaining(String name, Pageable pageable) {
         if (pageable == null) {
-            throw new IllegalArgumentException("페이징 정보는 필수입니다.");
+            throw new InvalidValueException("pageable", null);
         }
 
         // QueryDSL로 구현
@@ -62,7 +63,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     @Override
     public Page<User> searchByCondition(UserSearchCondition condition, Pageable pageable) {
         if (pageable == null) {
-            throw new IllegalArgumentException("페이징 정보는 필수입니다.");
+            throw new InvalidValueException("pageable", null);
         }
 
         if (condition == null || condition.isEmpty()) {
