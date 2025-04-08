@@ -13,7 +13,7 @@ public class ErrorResponse {
     private final String code;
     private final String message;
     private final int status;
-    
+
     /**
      * ErrorCode로부터 ErrorResponse 생성
      */
@@ -24,7 +24,7 @@ public class ErrorResponse {
                 .status(errorCode.getStatus())
                 .build();
     }
-    
+
     /**
      * ErrorCode와 메시지로부터 ErrorResponse 생성
      */
@@ -35,4 +35,4 @@ public class ErrorResponse {
                 .status(errorCode.getStatus())
                 .build();
     }
-} 
+}

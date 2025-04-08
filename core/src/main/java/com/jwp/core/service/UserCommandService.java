@@ -18,10 +18,10 @@ import jakarta.validation.Valid;
 @Service
 @Transactional
 public class UserCommandService {
-    
+
     private final UserRepository userRepository;
     private final UserQueryService userQueryService;
-    
+
     /**
      * 생성자
      * @param userRepository 사용자 레포지토리
@@ -31,7 +31,7 @@ public class UserCommandService {
         this.userRepository = userRepository;
         this.userQueryService = userQueryService;
     }
-    
+
     /**
      * 사용자 생성
      * @param user 생성할 사용자 정보
@@ -41,14 +41,14 @@ public class UserCommandService {
         if (user == null) {
             throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "사용자 정보는 필수입니다.");
         }
-        
+
         if (userQueryService.existsByEmail(user.getEmail())) {
             throw UserDomainException.emailDuplication(user.getEmail());
         }
-        
+
         return userRepository.save(user);
     }
-    
+
     /**
      * 사용자 정보 업데이트
      * @param email 대상 사용자 이메일
@@ -58,7 +58,7 @@ public class UserCommandService {
     public User updateUserInfo(String email, String newName) {
         validateEmail(email);
         validateName(newName);
-        
+
         return userQueryService.findByEmail(email)
                 .map(user -> {
                     user.update(newName);
@@ -66,7 +66,7 @@ public class UserCommandService {
                 })
                 .orElseThrow(() -> UserDomainException.userNotFound(email));
     }
-    
+
     /**
      * 비밀번호 변경
      * @param email 대상 사용자 이메일
@@ -76,7 +76,7 @@ public class UserCommandService {
     public User changePassword(String email, String newPassword) {
         validateEmail(email);
         validatePassword(newPassword);
-        
+
         return userQueryService.findByEmail(email)
                 .map(user -> {
                     user.changePassword(newPassword);
@@ -84,38 +84,38 @@ public class UserCommandService {
                 })
                 .orElseThrow(() -> UserDomainException.userNotFound(email));
     }
-    
+
     /**
      * 사용자 삭제
      * @param email 삭제할 사용자 이메일
      */
     public void deleteUser(String email) {
         validateEmail(email);
-        
+
         User user = userRepository.findByEmail(email);
         if (user == null) {
             throw UserDomainException.userNotFound(email);
         }
-        
+
         userRepository.delete(user);
     }
-    
+
     // 유효성 검증 메소드
     private void validateEmail(String email) {
         if (email == null || email.isBlank()) {
             throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "이메일은 필수입니다.");
         }
     }
-    
+
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
             throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "이름은 필수입니다.");
         }
     }
-    
+
     private void validatePassword(String password) {
         if (password == null || password.isBlank()) {
             throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "비밀번호는 필수입니다.");
         }
     }
-} 
+}

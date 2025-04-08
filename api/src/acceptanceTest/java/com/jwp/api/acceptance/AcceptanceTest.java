@@ -37,7 +37,7 @@ public abstract class AcceptanceTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        
+
         this.spec = new RequestSpecBuilder()
                 .setBaseUri("http://localhost")
                 .setPort(port)
@@ -45,17 +45,17 @@ public abstract class AcceptanceTest {
                     return ctx.next(requestSpec, responseSpec);
                 })
                 .build();
-        
+
         // 테스트 전 데이터 초기화
         initializeTestData();
     }
-    
+
     /**
      * 테스트용 데이터 초기화
      * 상속받은 클래스에서 필요한 테스트 데이터를 초기화합니다.
      */
     protected abstract void initializeTestData();
-    
+
     /**
      * API 경로 생성
      * @param path 상대 경로
@@ -64,4 +64,4 @@ public abstract class AcceptanceTest {
     protected String getUrl(String path) {
         return "http://localhost:" + port + path;
     }
-} 
+}

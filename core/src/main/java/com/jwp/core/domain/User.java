@@ -76,4 +76,4 @@ public class User extends BaseTimeEntity {
     public void changeStatus(UserStatus status) {
         this.status = status;
     }
-} 
+}

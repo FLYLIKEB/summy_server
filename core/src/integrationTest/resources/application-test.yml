@@ -3,7 +3,7 @@ spring:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
     username: sa
-    password: 
+    password:
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -14,8 +14,8 @@ spring:
   h2:
     console:
       enabled: true
-      
+
 logging:
   level:
     org.hibernate.SQL: debug
-    org.hibernate.type.descriptor.sql: trace 
+    org.hibernate.type.descriptor.sql: trace

@@ -18,7 +18,7 @@ public class AcceptanceSteps {
 
     /**
      * HTTP GET 요청 수행
-     * 
+     *
      * @param url 요청 URL
      * @return API 응답
      */
@@ -32,7 +32,7 @@ public class AcceptanceSteps {
 
     /**
      * HTTP GET 요청 수행 (쿼리 파라미터 포함)
-     * 
+     *
      * @param url 요청 URL
      * @param queryParams 쿼리 파라미터
      * @return API 응답
@@ -48,7 +48,7 @@ public class AcceptanceSteps {
 
     /**
      * HTTP POST 요청 수행
-     * 
+     *
      * @param url 요청 URL
      * @param body 요청 본문
      * @return API 응답
@@ -65,7 +65,7 @@ public class AcceptanceSteps {
 
     /**
      * HTTP PUT 요청 수행
-     * 
+     *
      * @param url 요청 URL
      * @param body 요청 본문
      * @return API 응답
@@ -82,7 +82,7 @@ public class AcceptanceSteps {
 
     /**
      * HTTP DELETE 요청 수행
-     * 
+     *
      * @param url 요청 URL
      * @return API 응답
      */
@@ -96,7 +96,7 @@ public class AcceptanceSteps {
 
     /**
      * 응답 상태코드 검증
-     * 
+     *
      * @param response API 응답
      * @param expectedStatus 기대하는 상태코드
      */
@@ -106,7 +106,7 @@ public class AcceptanceSteps {
 
     /**
      * Given-When-Then 패턴의 테스트 단계 실행
-     * 
+     *
      * @param given 주어진 상황
      * @param when 실행할 작업
      * @param then 검증할 결과
@@ -119,11 +119,11 @@ public class AcceptanceSteps {
             java.util.function.Consumer<R> then) {
         // Given
         T givenResult = given.get();
-        
+
         // When
         R whenResult = when.apply(givenResult);
-        
+
         // Then
         then.accept(whenResult);
     }
-} 
+}
