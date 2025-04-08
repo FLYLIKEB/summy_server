@@ -8,15 +8,15 @@ import com.jwp.core.exception.ErrorCode;
  * 사용자와 관련된 에러를 다룹니다.
  */
 public class UserDomainException extends BusinessException {
-    
+
     public UserDomainException(ErrorCode errorCode) {
         super(errorCode);
     }
-    
+
     public UserDomainException(ErrorCode errorCode, String message) {
         super(errorCode, message);
     }
-    
+
     /**
      * 이메일 중복 예외 팩토리 메소드
      */
@@ -26,7 +26,7 @@ public class UserDomainException extends BusinessException {
                 String.format("이미 존재하는 이메일입니다: %s", email)
         );
     }
-    
+
     /**
      * 사용자 없음 예외 팩토리 메소드
      */
@@ -36,7 +36,7 @@ public class UserDomainException extends BusinessException {
                 String.format("사용자를 찾을 수 없습니다: %s", identifier)
         );
     }
-    
+
     /**
      * 비활성 사용자 예외 팩토리 메소드
      */
@@ -46,4 +46,4 @@ public class UserDomainException extends BusinessException {
                 String.format("비활성화된 사용자입니다: %s", email)
         );
     }
-} 
+}

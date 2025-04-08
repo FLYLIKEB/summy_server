@@ -201,4 +201,4 @@ class UserRepositoryImplTest {
         assertThatThrownBy(() -> repository.searchByCondition(condition, pageable))
                 .isInstanceOf(InvalidValueException.class);
     }
-} 
+}

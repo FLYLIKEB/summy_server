@@ -23,13 +23,13 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
-    
+
     java {
         toolchain {
             languageVersion = JavaLanguageVersion.of(21)
         }
     }
-    
+
     configurations {
         compileOnly {
             extendsFrom annotationProcessor
@@ -40,8 +40,11 @@ subprojects {
         integrationTestImplementation {
             extendsFrom testImplementation
         }
+        acceptanceTestImplementation {
+            extendsFrom testImplementation
+        }
     }
-    
+
     sourceSets {
         unitTest {
             compileClasspath += sourceSets.main.output
@@ -57,61 +60,154 @@ subprojects {
                 srcDir 'src/integrationTest/resources'
             }
         }
+        acceptanceTest {
+            compileClasspath += sourceSets.main.output
+            runtimeClasspath += sourceSets.main.output
+            java {
+                srcDir 'src/acceptanceTest/java'
+            }
+            resources {
+                srcDir 'src/acceptanceTest/resources'
+            }
+        }
     }
-    
+
     dependencies {
         // Spring Boot
         implementation 'org.springframework.boot:spring-boot-starter'
-        
+
         // Lombok
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
         testCompileOnly 'org.projectlombok:lombok'
         testAnnotationProcessor 'org.projectlombok:lombok'
-        
+
         // Bean Validation
         implementation 'org.springframework.boot:spring-boot-starter-validation'
-        
+
         // Test
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
         unitTestImplementation 'org.springframework.boot:spring-boot-starter-test'
         integrationTestImplementation 'org.springframework.boot:spring-boot-starter-test'
+        acceptanceTestImplementation 'org.springframework.boot:spring-boot-starter-test'
+        acceptanceTestImplementation 'io.rest-assured:rest-assured:5.4.0'
     }
-    
+
     tasks.named('test') {
         useJUnitPlatform()
     }
-    
+
     // 단위 테스트 태스크 정의
-    task unitTest(type: Test) {
+    tasks.register('unitTest', Test) {
         description = '단위 테스트만 실행합니다.'
         group = 'verification'
-        
+
         testClassesDirs = sourceSets.unitTest.output.classesDirs
         classpath = sourceSets.unitTest.runtimeClasspath
-        
+
         testLogging {
             events "passed", "skipped", "failed"
         }
     }
-    
-    // 통합 테스트 태스크 정의 
-    task integrationTest(type: Test) {
+
+    // 통합 테스트 태스크 정의
+    tasks.register('integrationTest', Test) {
         description = '통합 테스트만 실행합니다.'
         group = 'verification'
-        
+
         useJUnitPlatform()
         testClassesDirs = sourceSets.integrationTest.output.classesDirs
         classpath = sourceSets.integrationTest.runtimeClasspath
-        
+
         testLogging {
             events "passed", "skipped", "failed"
         }
     }
-    
+
+    // 인수 테스트 태스크 정의
+    tasks.register('acceptanceTest', Test) {
+        description = '인수 테스트만 실행합니다.'
+        group = 'verification'
+
+        useJUnitPlatform()
+        testClassesDirs = sourceSets.acceptanceTest.output.classesDirs
+        classpath = sourceSets.acceptanceTest.runtimeClasspath
+
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
+    }
+
+    // 모든 테스트 실행 태스크
+    tasks.register('allTests', Test) {
+        description = '단위 테스트, 통합 테스트, 인수 테스트를 모두 실행합니다.'
+        group = 'verification'
+
+        useJUnitPlatform()
+
+        // 모든 테스트 소스셋을 포함
+        Set<File> allClassesDirs = new HashSet<>()
+        Set<File> allResourcesDirs = new HashSet<>()
+
+        // 기본 테스트 소스셋 추가
+        allClassesDirs.addAll(sourceSets.test.output.classesDirs.files)
+        allResourcesDirs.addAll(sourceSets.test.output.resourcesDir)
+
+        // 단위 테스트 소스셋 추가
+        if (sourceSets.named('unitTest')) {
+            allClassesDirs.addAll(sourceSets.unitTest.output.classesDirs.files)
+
+            if (sourceSets.unitTest.output.resourcesDir) {
+                allResourcesDirs.add(sourceSets.unitTest.output.resourcesDir)
+            }
+        }
+
+        // 통합 테스트 소스셋 추가
+        if (sourceSets.named('integrationTest')) {
+            allClassesDirs.addAll(sourceSets.integrationTest.output.classesDirs.files)
+
+            if (sourceSets.integrationTest.output.resourcesDir) {
+                allResourcesDirs.add(sourceSets.integrationTest.output.resourcesDir)
+            }
+        }
+
+        // 인수 테스트 소스셋 추가
+        if (sourceSets.named('acceptanceTest')) {
+            allClassesDirs.addAll(sourceSets.acceptanceTest.output.classesDirs.files)
+
+            if (sourceSets.acceptanceTest.output.resourcesDir) {
+                allResourcesDirs.add(sourceSets.acceptanceTest.output.resourcesDir)
+            }
+        }
+
+        // 모든 클래스와 리소스를 테스트 실행에 포함
+        testClassesDirs = files(allClassesDirs)
+        classpath = sourceSets.test.runtimeClasspath +
+                (sourceSets.named('unitTest') ? sourceSets.unitTest.runtimeClasspath : files()) +
+                (sourceSets.named('integrationTest') ? sourceSets.integrationTest.runtimeClasspath : files()) +
+                (sourceSets.named('acceptanceTest') ? sourceSets.acceptanceTest.runtimeClasspath : files())
+
+        testLogging {
+            events "passed", "skipped", "failed"
+            showStandardStreams = true
+            exceptionFormat = 'full'
+        }
+
+        // 테스트 결과 요약 출력
+        afterSuite { desc, result ->
+            if (!desc.parent) {
+                println "\n테스트 결과: ${result.resultType} (${result.testCount} 테스트, " +
+                        "${result.successfulTestCount} 성공, ${result.failedTestCount} 실패, " +
+                        "${result.skippedTestCount} 스킵)"
+            }
+        }
+    }
+
     // 중복 파일 처리 전략 설정
-    tasks.withType(ProcessResources) {
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    tasks.withType(ProcessResources).tap {
+        configureEach {
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        }
     }
 }
 
@@ -120,10 +216,10 @@ project(':core') {
     apply plugin: 'java-library'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
-    
+
     bootJar { enabled = false }
     jar { enabled = true }
-    
+
     dependencies {
         api 'org.springframework.boot:spring-boot-starter-data-jpa'
         api 'org.springframework.boot:spring-boot-starter-data-redis'
@@ -138,19 +234,19 @@ project(':core') {
         annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
         annotationProcessor "jakarta.annotation:jakarta.annotation-api"
         annotationProcessor "jakarta.persistence:jakarta.persistence-api"
-        
+
         // 테스트용 인메모리 DB
         runtimeOnly 'com.h2database:h2'
         // 운영용 DB 드라이버
         runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
     }
-    
+
     configurations {
         compileOnly {
             extendsFrom annotationProcessor
         }
     }
-    
+
     def querydslDir = "$buildDir/generated/querydsl"
 
     tasks.withType(JavaCompile).configureEach {
@@ -160,13 +256,13 @@ project(':core') {
     sourceSets {
         main.java.srcDir querydslDir
     }
-    
+
     tasks.named('clean') {
         doLast {
             file(querydslDir).deleteDir()
         }
     }
-    
+
     // Q클래스 생성 태스크
     tasks.register('generateQClass', JavaCompile) {
         source = sourceSets.main.java
@@ -190,7 +286,7 @@ project(':core') {
             }
         }
     }
-    
+
     // compileQuerydsl 태스크 추가 (하위 호환성을 위해)
     task compileQuerydsl(dependsOn: generateQClass) {
         group = 'build'
@@ -202,11 +298,89 @@ project(':core') {
 project(':api') {
     dependencies {
         implementation project(':core')
-        
+
         // Web
         implementation 'org.springframework.boot:spring-boot-starter-web'
-        
+
         // Security
         implementation 'org.springframework.boot:spring-boot-starter-security'
+
+        // 인수 테스트 추가 의존성
+        acceptanceTestImplementation 'io.rest-assured:spring-mock-mvc:5.4.0'
+        acceptanceTestImplementation 'com.fasterxml.jackson.core:jackson-databind'
+        acceptanceTestImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+        acceptanceTestImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
+    }
+}
+
+// 모든 서브프로젝트의 테스트를 실행하는 루트 프로젝트 태스크
+tasks.register('allProjectTests') {
+    description = '모든 서브프로젝트의 전체 테스트를 실행합니다.'
+    group = 'verification'
+
+    dependsOn subprojects.collect { it.tasks.withType(Test) }
+
+    doLast {
+        println "\n모든 프로젝트의 테스트가 완료되었습니다."
+    }
+}
+
+// 모든 서브프로젝트의 기본 테스트만 실행하는 태스크
+tasks.register('testAll') {
+    description = '모든 서브프로젝트의 기본 테스트를 실행합니다.'
+    group = 'verification'
+
+    dependsOn subprojects.collect { it.tasks.named('test') }
+
+    doLast {
+        println "\n모든 프로젝트의 기본 테스트가 완료되었습니다."
+    }
+}
+
+// 모든 서브프로젝트의 통합 테스트만 실행하는 태스크
+tasks.register('integrationTestAll') {
+    description = '모든 서브프로젝트의 통합 테스트를 실행합니다.'
+    group = 'verification'
+
+    dependsOn subprojects.collect { it.tasks.named('integrationTest') }.findAll { it != null }
+
+    doLast {
+        println "\n모든 프로젝트의 통합 테스트가 완료되었습니다."
+    }
+}
+
+// 모든 서브프로젝트의 단위 테스트만 실행하는 태스크
+tasks.register('unitTestAll') {
+    description = '모든 서브프로젝트의 단위 테스트를 실행합니다.'
+    group = 'verification'
+
+    dependsOn subprojects.collect { it.tasks.named('unitTest') }.findAll { it != null }
+
+    doLast {
+        println "\n모든 프로젝트의 단위 테스트가 완료되었습니다."
+    }
+}
+
+// 모든 서브프로젝트의 인수 테스트만 실행하는 태스크
+tasks.register('acceptanceTestAll') {
+    description = '모든 서브프로젝트의 인수 테스트를 실행합니다.'
+    group = 'verification'
+
+    dependsOn subprojects.collect { it.tasks.named('acceptanceTest') }.findAll { it != null }
+
+    doLast {
+        println "\n모든 프로젝트의 인수 테스트가 완료되었습니다."
+    }
+}
+
+// 모든 서브프로젝트의 모든 종류의 테스트를 실행하는 태스크
+tasks.register('allTestsAll') {
+    description = '모든 서브프로젝트의 모든 종류의 테스트를 실행합니다.'
+    group = 'verification'
+
+    dependsOn subprojects.collect { it.tasks.named('allTests') }.findAll { it != null }
+
+    doLast {
+        println "\n모든 프로젝트의 전체 테스트가 완료되었습니다."
     }
 }
