@@ -1,12 +1,29 @@
 package com.jwp.api.user;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import com.jwp.api.service.UserApiService;
+import com.jwp.core.domain.User;
+import com.jwp.core.domain.UserStatus;
+import com.jwp.core.repository.UserSearchCondition;
+
+import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.common.mapper.TypeRef;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +31,46 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 public class UserAcceptanceTest {
+    @LocalServerPort
+    private int port;
+
+    @MockBean
+    private UserApiService userApiService;
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+        
+        // Mock 데이터 설정
+        User user1 = User.builder()
+            .email("user1@example.com")
+            .name("사용자1")
+            .password("password1")
+            .status(UserStatus.ACTIVE)
+            .build();
+        ReflectionTestUtils.setField(user1, "id", 1L);
+            
+        User user2 = User.builder()
+            .email("user2@example.com")
+            .name("사용자2")
+            .password("password2")
+            .status(UserStatus.ACTIVE)
+            .build();
+        ReflectionTestUtils.setField(user2, "id", 2L);
+            
+        // Mock 동작 설정
+        when(userApiService.findUsers(any(UserSearchCondition.class), any(Pageable.class)))
+            .thenReturn(new PageImpl<>(Arrays.asList(user1, user2)));
+            
+        when(userApiService.findUser(any(Long.class)))
+            .thenReturn(user1);
+    }
 
     /**
      * 테스트를 위한 사용자 생성
@@ -36,8 +91,15 @@ public class UserAcceptanceTest {
      * @return 응답 객체
      */
     private ExtractableResponse<Response> 요청_GET(String url, Map<String, Object> queryParams) {
-        // GET 요청 로직 구현
-        return null;
+        System.out.println("Executing GET request to: " + url + " with params: " + queryParams);
+        return RestAssured.given()
+            .log().all()
+            .queryParams(queryParams)
+            .when()
+            .get(url)
+            .then()
+            .log().all()
+            .extract();
     }
 
     /**
@@ -58,7 +120,7 @@ public class UserAcceptanceTest {
      * @param expectedStatusCode 기대하는 상태 코드
      */
     private void 응답_상태코드_검증(ExtractableResponse<Response> response, int expectedStatusCode) {
-        // 상태 코드 검증 로직 구현
+        assertThat(response.statusCode()).isEqualTo(expectedStatusCode);
     }
 
     @Test
@@ -75,7 +137,7 @@ public class UserAcceptanceTest {
         Map<String, Object> queryParams = new HashMap<>();
         queryParams.put("name", "사용자");
 
-        ExtractableResponse<Response> response = 요청_GET(getUrl("/api/users"), queryParams);
+        ExtractableResponse<Response> response = 요청_GET(getUrl("/api/v1/users"), queryParams);
 
         // then
         응답_상태코드_검증(response, HttpStatus.OK.value());
