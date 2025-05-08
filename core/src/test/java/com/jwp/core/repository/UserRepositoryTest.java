@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @ContextConfiguration(classes = TestApplication.class)
+@Import(UserRepositoryImpl.class)
 @ActiveProfiles("test")
 @DisplayName("UserRepository 테스트")
 class UserRepositoryTest {
