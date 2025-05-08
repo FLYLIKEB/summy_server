@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: summy-api
+  profiles:
+    active: ${ACTIVE_PROFILE:local}
+  datasource:
+    url: jdbc:mysql://database-1.cnyqy8snc0sl.ap-northeast-2.rds.amazonaws.com:3306/database-1
+    username: admin
+    password: az980831
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+# OpenAI API 설정
+openai:
+  api:
+    key: ${OPENAI_API_KEY:}
+    url: https://api.openai.com/v1
+
+# 서버 포트 설정
+server:
+  port: 8080

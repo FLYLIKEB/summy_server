@@ -1,22 +1,18 @@
 package unit;
 
+import com.jwp.api.ApiApplication;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-@WebMvcTest
+@SpringBootTest(classes = ApiApplication.class)
+@ActiveProfiles("test")
 public class ExampleControllerTest {
-    
+
     @Test
     void unitTest_WhenEndpointCalled_ThenExpectedResponse() {
-        // Given
-        
-        // When
-        boolean result = true;
-        
-        // Then
-        assertThat(result).isTrue();
+        assertThat(true).isTrue();
     }
 } 
