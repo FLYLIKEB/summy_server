@@ -6,7 +6,7 @@ spring:
   datasource:
     url: jdbc:mariadb://database-1.cnyqy8snc0sl.ap-northeast-2.rds.amazonaws.com:3306/database-1
     username: admin
-    password: az980831
+    password: ${DB_PASSWORD:}
     driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
