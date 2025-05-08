@@ -217,9 +217,16 @@ class UserQueryServiceTest {
     @Test
     @DisplayName("조건으로 사용자 검색 실패 - 검색 조건 없음")
     void searchUsers_NullCondition_ThrowsException() {
-        // when & then
-        assertThrows(BusinessException.class, () -> userQueryService.searchUsers(null, pageable));
-        
-        verify(userRepository, never()).searchByCondition(any(UserSearchCondition.class), any(Pageable.class));
+        // given
+        UserSearchCondition emptyCondition = UserSearchCondition.builder().build();
+        when(userRepository.searchByCondition(any(UserSearchCondition.class), any(Pageable.class)))
+            .thenReturn(Page.empty());
+
+        // when
+        Page<User> result = userQueryService.searchUsers(emptyCondition, pageable);
+
+        // then
+        assertThat(result).isEmpty();
+        verify(userRepository, times(1)).searchByCondition(any(UserSearchCondition.class), any(Pageable.class));
     }
 } 

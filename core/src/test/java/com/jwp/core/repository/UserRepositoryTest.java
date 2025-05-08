@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,15 +22,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @ContextConfiguration(classes = TestApplication.class)
+@Import(UserRepositoryImpl.class)
 @ActiveProfiles("test")
 @DisplayName("UserRepository 테스트")
 class UserRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private UserRepositoryCustom userRepositoryCustom;
 
     private User user1;
     private User user2;
@@ -113,7 +112,7 @@ class UserRepositoryTest {
         Pageable pageable = PageRequest.of(0, 10, Sort.by("name").ascending());
 
         // when
-        Page<User> userPage = ((UserRepositoryImpl) userRepositoryCustom).findByNameContaining(nameKeyword, pageable);
+        Page<User> userPage = userRepository.findByNameContaining(nameKeyword, pageable);
 
         // then
         assertThat(userPage).isNotNull();
@@ -132,7 +131,7 @@ class UserRepositoryTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         // when
-        Page<User> userPage = userRepositoryCustom.searchByCondition(condition, pageable);
+        Page<User> userPage = userRepository.searchByCondition(condition, pageable);
 
         // then
         assertThat(userPage).isNotNull();
@@ -150,7 +149,7 @@ class UserRepositoryTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         // when
-        Page<User> userPage = userRepositoryCustom.searchByCondition(condition, pageable);
+        Page<User> userPage = userRepository.searchByCondition(condition, pageable);
 
         // then
         assertThat(userPage).isNotNull();
@@ -169,7 +168,7 @@ class UserRepositoryTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         // when
-        Page<User> userPage = userRepositoryCustom.searchByCondition(condition, pageable);
+        Page<User> userPage = userRepository.searchByCondition(condition, pageable);
 
         // then
         assertThat(userPage).isNotNull();
@@ -186,7 +185,7 @@ class UserRepositoryTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         // when
-        Page<User> userPage = userRepositoryCustom.searchByCondition(condition, pageable);
+        Page<User> userPage = userRepository.searchByCondition(condition, pageable);
 
         // then
         assertThat(userPage).isNotNull();
@@ -203,7 +202,7 @@ class UserRepositoryTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         // when
-        Page<User> userPage = userRepositoryCustom.searchByCondition(condition, pageable);
+        Page<User> userPage = userRepository.searchByCondition(condition, pageable);
 
         // then
         assertThat(userPage).isNotNull();

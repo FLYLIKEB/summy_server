@@ -34,15 +34,6 @@ subprojects {
         compileOnly {
             extendsFrom annotationProcessor
         }
-        unitTestImplementation {
-            extendsFrom testImplementation
-        }
-        integrationTestImplementation {
-            extendsFrom testImplementation
-        }
-        acceptanceTestImplementation {
-            extendsFrom testImplementation
-        }
     }
 
     sourceSets {
@@ -59,6 +50,8 @@ subprojects {
             resources {
                 srcDir 'src/integrationTest/resources'
             }
+            compileClasspath += sourceSets.test.runtimeClasspath
+            runtimeClasspath += sourceSets.test.runtimeClasspath
         }
         acceptanceTest {
             compileClasspath += sourceSets.main.output
@@ -69,6 +62,8 @@ subprojects {
             resources {
                 srcDir 'src/acceptanceTest/resources'
             }
+            compileClasspath += sourceSets.test.runtimeClasspath
+            runtimeClasspath += sourceSets.test.runtimeClasspath
         }
     }
 
@@ -250,7 +245,7 @@ project(':core') {
     def querydslDir = "$buildDir/generated/querydsl"
 
     tasks.withType(JavaCompile).configureEach {
-        options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
+        options.generatedSourceOutputDirectory = file(querydslDir)
     }
 
     sourceSets {

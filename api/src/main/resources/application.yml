@@ -4,10 +4,10 @@ spring:
   profiles:
     active: ${ACTIVE_PROFILE:local}
   datasource:
-    url: jdbc:mysql://database-1.cnyqy8snc0sl.ap-northeast-2.rds.amazonaws.com:3306/database-1
+    url: jdbc:mariadb://database-1.cnyqy8snc0sl.ap-northeast-2.rds.amazonaws.com:3306/database-1
     username: admin
-    password: az980831
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: ${DB_PASSWORD:}
+    driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: none
@@ -17,7 +17,7 @@ spring:
         format_sql: true
         show_sql: true
         use_sql_comments: true
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: org.hibernate.dialect.MariaDBDialect
 
 # OpenAI API 설정
 openai:
