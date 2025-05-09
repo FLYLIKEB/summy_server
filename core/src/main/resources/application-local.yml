@@ -1,0 +1,18 @@
+# 코어 모듈 로컬 개발 환경 설정
+spring:
+  datasource:
+    # H2 인메모리 데이터베이스 설정
+    url: jdbc:h2:tcp://localhost:9092/./testdb;MODE=MySQL;DB_CLOSE_DELAY=-1  # MySQL 모드로 H2 실행
+    username: sa  # 기본 사용자 이름
+    password:  # 비밀번호 없음
+    driver-class-name: org.h2.Driver  # H2 드라이버 클래스
+  jpa:
+    hibernate:
+      ddl-auto: create-drop  # 애플리케이션 시작 시 스키마 생성, 종료 시 삭제 (개발 환경 전용)
+    show-sql: true  # SQL 쿼리 콘솔 출력
+    properties:
+      hibernate:
+        format_sql: true  # SQL 쿼리 포맷팅
+        show_sql: true  # SQL 쿼리 로깅
+        use_sql_comments: true  # SQL 주석 활성화
+        dialect: org.hibernate.dialect.H2Dialect  # H2 데이터베이스 방언 설정 
