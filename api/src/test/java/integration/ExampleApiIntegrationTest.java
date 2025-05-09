@@ -1,13 +1,16 @@
 package integration;
 
 import com.jwp.api.ApiApplication;
+import com.jwp.core.config.JpaConfig;
+import com.jwp.core.domain.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,9 +20,10 @@ import com.jwp.core.service.UserQueryService;
 import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = ApiApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DataJpaTest
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
+@Import({JpaConfig.class, User.class})
 public class ExampleApiIntegrationTest {
     
     @LocalServerPort
