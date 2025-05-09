@@ -4,12 +4,14 @@ import com.jwp.api.ApiApplication;
 import com.jwp.core.config.JpaConfig;
 import com.jwp.core.domain.User;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,26 +23,43 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@ExtendWith(MockitoExtension.class)
+@EntityScan(basePackages = "com.jwp.core.domain")
 @ActiveProfiles("test")
-@Import({JpaConfig.class, User.class})
 public class ExampleApiIntegrationTest {
+    
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+            return Mockito.mock(PasswordEncoder.class);
+        }
+        
+        @Bean
+        public UserCommandService userCommandService() {
+            return Mockito.mock(UserCommandService.class);
+        }
+        
+        @Bean
+        public UserQueryService userQueryService() {
+            return Mockito.mock(UserQueryService.class);
+        }
+    }
     
     @LocalServerPort
     private int port;
     
     private TestRestTemplate restTemplate = new TestRestTemplate();
     
-    @Mock
+    @Autowired
     private UserRepository userRepository;
     
-    @Mock
+    @Autowired
     private PasswordEncoder passwordEncoder;
     
-    @Mock
+    @Autowired
     private UserCommandService userCommandService;
     
-    @Mock
+    @Autowired
     private UserQueryService userQueryService;
     
     @Test
