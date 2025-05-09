@@ -1,16 +1,13 @@
 package integration;
 
 import com.jwp.api.ApiApplication;
-import com.jwp.core.config.JpaConfig;
-import com.jwp.core.domain.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,13 +24,11 @@ public class ExampleApiIntegrationTest {
     @LocalServerPort
     private int port;
     
-    private TestRestTemplate restTemplate = new TestRestTemplate();
+    @Autowired
+    private TestRestTemplate restTemplate;
     
     @Autowired
-    private UserRepository userRepository;
-    
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private ApplicationContext applicationContext;
     
     @MockBean
     private UserCommandService userCommandService;
@@ -52,5 +47,8 @@ public class ExampleApiIntegrationTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
+        assertThat(applicationContext).isNotNull();
+        assertThat(userCommandService).isNotNull();
+        assertThat(userQueryService).isNotNull();
     }
 } 
