@@ -3,14 +3,16 @@ package integration;
 import com.jwp.api.ApiApplication;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.jwp.core.repository.UserRepository;
 import com.jwp.core.service.UserCommandService;
 import com.jwp.core.service.UserQueryService;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = ApiApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -22,16 +24,16 @@ public class ExampleApiIntegrationTest {
     
     private TestRestTemplate restTemplate = new TestRestTemplate();
     
-    @MockitoBean
+    @MockBean
     private UserRepository userRepository;
     
-    @MockitoBean
+    @MockBean
     private PasswordEncoder passwordEncoder;
     
-    @MockitoBean
+    @MockBean
     private UserCommandService userCommandService;
     
-    @MockitoBean
+    @MockBean
     private UserQueryService userQueryService;
     
     @Test
@@ -40,10 +42,10 @@ public class ExampleApiIntegrationTest {
         String baseUrl = "http://localhost:" + port;
         
         // When
-        boolean result = true;
-        restTemplate.getForEntity(baseUrl + "/api/users", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity(baseUrl + "/api/users", String.class);
         
         // Then
-        assertThat(result).isTrue();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
     }
 } 
