@@ -41,6 +41,7 @@ public class ExampleApiIntegrationTest {
         
         // When
         boolean result = true;
+        restTemplate.getForEntity(baseUrl + "/api/users", String.class);
         
         // Then
         assertThat(result).isTrue();
