@@ -5,16 +5,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.jwp.core.repository.UserRepository;
 import com.jwp.core.service.UserCommandService;
 import com.jwp.core.service.UserQueryService;
+import com.jwp.core.domain.User;
 import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
+@DataJpaTest
+@Import({User.class})
 class ApiApplicationTests {
 
     @Mock
