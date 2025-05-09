@@ -2,13 +2,14 @@ package unit;
 
 import com.jwp.api.ApiApplication;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.jwp.core.repository.UserRepository;
 import com.jwp.core.service.UserCommandService;
 import com.jwp.core.service.UserQueryService;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,20 +17,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 public class ExampleControllerTest {
 
-    @MockitoBean
+    @MockBean
     private UserRepository userRepository;
     
-    @MockitoBean
+    @Autowired
     private PasswordEncoder passwordEncoder;
     
-    @MockitoBean
+    @MockBean
     private UserCommandService userCommandService;
     
-    @MockitoBean
+    @MockBean
     private UserQueryService userQueryService;
 
     @Test
     void unitTest_WhenEndpointCalled_ThenExpectedResponse() {
         assertThat(true).isTrue();
+        assertThat(passwordEncoder).isNotNull();
+        assertThat(userRepository).isNotNull();
+        assertThat(userCommandService).isNotNull();
+        assertThat(userQueryService).isNotNull();
     }
 } 
