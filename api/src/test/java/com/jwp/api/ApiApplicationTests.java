@@ -1,22 +1,39 @@
 package com.jwp.api;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.jwp.core.repository.UserRepository;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import com.jwp.core.service.UserCommandService;
+import com.jwp.core.service.UserQueryService;
+import org.springframework.test.context.ActiveProfiles;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = ApiApplication.class)
+@SpringBootTest
+@ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
 class ApiApplicationTests {
 
-    @MockitoBean
+    @Mock
     private UserRepository userRepository;
     
-    @MockitoBean
+    @Mock
     private PasswordEncoder passwordEncoder;
+    
+    @Mock
+    private UserCommandService userCommandService;
+    
+    @Mock
+    private UserQueryService userQueryService;
 
     @Test
     void contextLoads() {
-        // 기본 컨텍스트 로드 테스트
+        assertThat(userRepository).isNotNull();
+        assertThat(passwordEncoder).isNotNull();
+        assertThat(userCommandService).isNotNull();
+        assertThat(userQueryService).isNotNull();
     }
 }
