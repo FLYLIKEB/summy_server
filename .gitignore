@@ -41,3 +41,7 @@ out/
 
 ### Cursor ###
 .cursor/
+
+# H2 Database
+*.mv.db
+*.trace.db

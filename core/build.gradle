@@ -1,2 +1,10 @@
 // 코어 모듈 설정
 // 의존성 관리는 루트 build.gradle 파일을 참고하세요.
+
+dependencies {
+    // Spring Data JPA
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    
+    // H2 Database (로컬 개발용)
+    runtimeOnly 'com.h2database:h2'
+}

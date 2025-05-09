@@ -100,8 +100,8 @@ public class UserSearchCondition {
      * @return 모든 필드가 비어있는 경우 true
      */
     public boolean isEmpty() {
-        return StringUtils.isEmpty(this.email) &&
-               StringUtils.isEmpty(this.name) &&
+        return !StringUtils.hasText(this.email) &&
+               !StringUtils.hasText(this.name) &&
                (dateRange == null || dateRange.isEmpty());
     }
 }
