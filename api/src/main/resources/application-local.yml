@@ -1,0 +1,6 @@
+# API 모듈 로컬 개발 환경 설정
+spring:
+  h2:
+    console:
+      enabled: true  # H2 웹 콘솔 활성화 (개발 환경 전용)
+      path: /h2-console  # H2 콘솔 접근 경로 
