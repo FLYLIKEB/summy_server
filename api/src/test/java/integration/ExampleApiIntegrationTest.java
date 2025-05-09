@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
@@ -27,24 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 public class ExampleApiIntegrationTest {
     
-    @TestConfiguration
-    static class TestConfig {
-        @Bean
-        public PasswordEncoder passwordEncoder() {
-            return Mockito.mock(PasswordEncoder.class);
-        }
-        
-        @Bean
-        public UserCommandService userCommandService() {
-            return Mockito.mock(UserCommandService.class);
-        }
-        
-        @Bean
-        public UserQueryService userQueryService() {
-            return Mockito.mock(UserQueryService.class);
-        }
-    }
-    
     @LocalServerPort
     private int port;
     
@@ -56,10 +39,10 @@ public class ExampleApiIntegrationTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
     
-    @Autowired
+    @MockBean
     private UserCommandService userCommandService;
     
-    @Autowired
+    @MockBean
     private UserQueryService userQueryService;
     
     @Test
