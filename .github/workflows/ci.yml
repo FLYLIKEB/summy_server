@@ -7,7 +7,7 @@ on:
     branches: [ main, develop ]
 
 jobs:
-  빌드:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -39,7 +39,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: 빌드-리포트
+        name: build-reports
         path: |
           **/build/reports/tests
           **/build/reports/jacoco
