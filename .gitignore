@@ -47,3 +47,4 @@ out/
 *.trace.db
 summy.pem
 server-config.env
+.env
