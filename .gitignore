@@ -46,3 +46,4 @@ out/
 *.mv.db
 *.trace.db
 summy.pem
+server-config.env

@@ -2,10 +2,10 @@
 set -euo pipefail
 
 # 로그 파일 설정
-LOG_FILE="/var/log/summy_deploy.log"
+LOG_FILE="./summy_deploy.log"
 APP_NAME="summy_server"
 JAR_PATH=$(find . -name "*.jar" | sort -V | tail -n 1)
-PID_FILE="/var/run/${APP_NAME}.pid"
+PID_FILE="./summy_server.pid"
 
 # 현재 시간을 로그에 기록
 echo "===== 배포 시작: $(date) =====" >> $LOG_FILE
@@ -57,7 +57,7 @@ echo "새 애플리케이션 버전 시작 중..." >> $LOG_FILE
 nohup java -jar $JAR_PATH \
   --spring.profiles.active=prod \
   --server.port=8080 \
-  > /var/log/${APP_NAME}.log 2>&1 &
+  > ./summy_server.log 2>&1 &
 
 # PID 저장
 echo $! > $PID_FILE
@@ -70,7 +70,7 @@ if ps -p $(cat $PID_FILE) > /dev/null; then
   echo "===== 배포 완료: $(date) =====" >> $LOG_FILE
 else
   echo "오류: 애플리케이션 시작에 실패했습니다!" >> $LOG_FILE
-  echo "로그를 확인하세요: /var/log/${APP_NAME}.log" >> $LOG_FILE
+  echo "로그를 확인하세요: ./summy_server.log" >> $LOG_FILE
   echo "===== 배포 실패: $(date) =====" >> $LOG_FILE
   exit 1
 fi 

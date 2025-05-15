@@ -4,6 +4,10 @@ spring:
     name: summy-api  # 애플리케이션 이름 설정
   profiles:
     active: ${ACTIVE_PROFILE:local}  # 활성 프로파일 설정, 기본값은 local
+  config:
+    import: optional:file:.env[.properties]  # .env 파일 로드
+  main:
+    allow-bean-definition-overriding: true  # Bean 정의 중복 허용
 
 # OpenAI API 설정
 openai:
