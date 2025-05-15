@@ -1,43 +1,29 @@
 package com.jwp.api.controller;
 
+import com.jwp.api.dto.xai.XAIMessageRequestDto;
+import com.jwp.api.dto.xai.XAIResponseDto;
+import com.jwp.api.service.XAIService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * XAI API 컨트롤러
- * XAI 관련 API 엔드포인트를 제공합니다.
- */
 @RestController
 @RequestMapping("/api/xai")
-@Tag(name = "XAI", description = "XAI 관련 API")
-@CrossOrigin(origins = {"http://localhost:3000", "http://52.78.150.124:8080", "https://summy-sigma.vercel.app"}, allowCredentials = "true")
-public class XaiController {
+@RequiredArgsConstructor
+@Tag(name = "xAI API", description = "xAI API 호출 관련 엔드포인트")
+public class XAIController {
 
-    /**
-     * 텍스트 요약 API
-     * 클라이언트가 보낸 텍스트를 요약합니다.
-     *
-     * @param request 요약 요청 본문
-     * @return 요약 결과
-     */
+    private final XAIService xaiService;
+
     @PostMapping("/complete")
-    @Operation(summary = "텍스트 요약", description = "입력된 텍스트를 요약합니다.")
-    public ResponseEntity<Map<String, String>> summarizeText(@RequestBody Map<String, String> request) {
-        // 실제 요약 로직은 여기에 구현
-        // 임시 응답 데이터
-        Map<String, String> response = new HashMap<>();
-        response.put("summary", "요약된 텍스트입니다. 실제 구현 시 이 부분이 대체됩니다.");
-        
+    @Operation(summary = "xAI API 호출", description = "사용자 메시지를 받아 xAI API에 요청하고 응답을 반환합니다.")
+    public ResponseEntity<XAIResponseDto> generateCompletion(@RequestBody XAIMessageRequestDto requestDto) {
+        XAIResponseDto response = xaiService.generateCompletion(requestDto.getMessage());
         return ResponseEntity.ok(response);
     }
 } 
