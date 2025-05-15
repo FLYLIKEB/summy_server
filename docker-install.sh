@@ -41,7 +41,7 @@ sudo systemctl enable docker >> $LOG_FILE 2>&1
 
 # 현재 사용자를 docker 그룹에 추가
 echo "현재 사용자를 docker 그룹에 추가 중..." >> $LOG_FILE
-sudo usermod -aG docker $USER >> $LOG_FILE 2>&1
+sudo usermod -aG docker ${SUDO_USER:-$USER} >> $LOG_FILE 2>&1
 
 # Docker Compose 설치
 echo "Docker Compose 설치 중..." >> $LOG_FILE
