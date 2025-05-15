@@ -8,6 +8,11 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 /**
  * Spring Security 설정
@@ -28,14 +33,45 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 활성화
                 .csrf(AbstractHttpConfigurer::disable) // API 서버를 위한 CSRF 비활성화
                 .formLogin(AbstractHttpConfigurer::disable) // API 서버를 위한 폼 로그인 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable) // API 서버를 위한 기본 인증 비활성화
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/**").permitAll() // API 요청은 인증 없이 허용
+                        // 문서 관련 경로 허용
+                        .requestMatchers("/docs", "/docs/**").permitAll()
+                        // Swagger UI 관련 경로 허용
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
+                        // 웹 콘솔 허용
+                        .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated() // 그 외 요청은 인증 필요
                 )
+                // H2 콘솔 사용을 위한 프레임 옵션 설정
+                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
                 .build();
+    }
+
+    /**
+     * CORS 설정을 위한 소스 구성
+     * 
+     * @return CORS 설정 소스
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList(
+            "http://localhost:3000", 
+            "http://52.78.150.124:8080",
+            "https://summy-sigma.vercel.app"
+        ));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     /**

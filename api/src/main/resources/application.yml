@@ -4,6 +4,10 @@ spring:
     name: summy-api  # 애플리케이션 이름 설정
   profiles:
     active: ${ACTIVE_PROFILE:local}  # 활성 프로파일 설정, 기본값은 local
+  config:
+    import: optional:file:.env[.properties]  # .env 파일 로드
+  main:
+    allow-bean-definition-overriding: true  # Bean 정의 중복 허용
 
 # OpenAI API 설정
 openai:
@@ -11,6 +15,19 @@ openai:
     key: ${OPENAI_API_KEY:}  # 환경 변수에서 OpenAI API 키 로드
     url: https://api.openai.com/v1  # OpenAI API 엔드포인트
 
+# xAI API 설정
+xai:
+  api:
+    key: ${XAI_API_KEY:}  # 환경 변수에서 xAI API 키 로드
+    url: https://api.x.ai/v1  # xAI API 엔드포인트
+
 # 서버 포트 설정
 server:
   port: 8080  # 애플리케이션 서버 포트
+
+# 로깅 설정
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    com.jwp.api: DEBUG

@@ -45,3 +45,6 @@ out/
 # H2 Database
 *.mv.db
 *.trace.db
+summy.pem
+server-config.env
+.env
