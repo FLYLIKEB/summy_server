@@ -72,6 +72,38 @@ ssh -i $SSH_KEY $SERVER_USER@$SERVER_IP "sudo usermod -aG docker $SERVER_USER &&
   echo "Docker 권한 설정 실패. 계속 진행합니다."
 }
 
+# 환경 변수 파일 생성 및 전송
+echo "환경 변수 파일 준비 중..."
+ENV_FILE=".env"
+
+# server-config.env에서 환경 변수를 .env 파일로 변환
+if [ -f "$CONFIG_FILE" ]; then
+  echo "# API 키 및 환경 변수" > $ENV_FILE
+  echo "# $(date '+%Y-%m-%d %H:%M:%S')에 자동 생성됨" >> $ENV_FILE
+  
+  # XAI_API_KEY 추출 및 추가
+  if grep -q "XAI_API_KEY" $CONFIG_FILE; then
+    grep "XAI_API_KEY" $CONFIG_FILE | sed 's/"//g' >> $ENV_FILE
+    echo "XAI API 키를 환경 변수 파일에 추가했습니다."
+  else
+    echo "경고: XAI_API_KEY를 찾을 수 없습니다."
+  fi
+  
+  # 기타 필요한 환경 변수 추가
+  echo "SERVER_IP=$SERVER_IP" >> $ENV_FILE
+  echo "SERVER_USER=$SERVER_USER" >> $ENV_FILE
+  echo "DEPLOY_PATH=$DEPLOY_PATH" >> $ENV_FILE
+  
+  # .env 파일 전송
+  echo "환경 변수 파일 전송 중..."
+  scp -i $SSH_KEY $ENV_FILE $SERVER_USER@$SERVER_IP:$DEPLOY_PATH/ || {
+    echo "환경 변수 파일 전송 실패"
+    exit 1
+  }
+else
+  echo "경고: 서버 설정 파일이 없어 환경 변수 파일을 생성하지 않았습니다."
+fi
+
 # JAR 파일 전송
 echo "JAR 파일 전송 중..."
 scp -i $SSH_KEY $JAR_FILE $SERVER_USER@$SERVER_IP:$DEPLOY_PATH/ || {
