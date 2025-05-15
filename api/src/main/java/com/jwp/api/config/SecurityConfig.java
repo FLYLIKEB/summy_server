@@ -33,8 +33,16 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable) // API 서버를 위한 기본 인증 비활성화
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/**").permitAll() // API 요청은 인증 없이 허용
+                        // 문서 관련 경로 허용
+                        .requestMatchers("/docs", "/docs/**").permitAll()
+                        // Swagger UI 관련 경로 허용
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
+                        // 웹 콘솔 허용
+                        .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated() // 그 외 요청은 인증 필요
                 )
+                // H2 콘솔 사용을 위한 프레임 옵션 설정
+                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
                 .build();
     }
 
