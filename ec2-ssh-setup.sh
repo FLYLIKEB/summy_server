@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # 이 스크립트는 EC2 서버 연결 및 GitHub Actions 배포를 위한 SSH 키를 설정합니다
 

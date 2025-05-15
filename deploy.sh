@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # 로그 파일 설정
 LOG_FILE="/var/log/summy_deploy.log"

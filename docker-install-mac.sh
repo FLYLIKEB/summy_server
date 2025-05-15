@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 echo "===== macOS용 Docker 설치 시작 ====="
 
