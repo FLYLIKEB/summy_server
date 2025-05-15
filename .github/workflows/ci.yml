@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 on:
   push:
@@ -43,4 +43,79 @@ jobs:
         path: |
           **/build/reports/tests
           **/build/reports/jacoco
-        retention-days: 7 
+        retention-days: 7
+        
+    - name: 빌드 결과물 저장
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: '**/build/libs/*.jar'
+        
+  deploy-ssh:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 빌드 결과물 다운로드
+      uses: actions/download-artifact@v4
+      with:
+        name: build-artifacts
+        
+    - name: SSH 비밀키 설정
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        
+    - name: 서버 호스트키 추가
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+        
+    - name: 애플리케이션 배포
+      run: |
+        scp -r **/build/libs/*.jar ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.DEPLOY_PATH }}
+        ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "cd ${{ secrets.DEPLOY_PATH }} && ./deploy.sh"
+        
+  deploy-docker:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: 빌드 결과물 다운로드
+      uses: actions/download-artifact@v4
+      with:
+        name: build-artifacts
+        path: ./build/libs
+        
+    - name: Docker Hub 로그인
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        
+    - name: Docker 이미지 빌드 및 푸시
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/summy-server:latest,${{ secrets.DOCKER_USERNAME }}/summy-server:${{ github.sha }}
+
+    - name: SSH 배포 설정
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        
+    - name: 서버 호스트키 추가
+      
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+        
+    - name: Docker 원격 배포
+      run: |
+        ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "cd ${{ secrets.DEPLOY_PATH }} && docker-compose pull && docker-compose up -d" 

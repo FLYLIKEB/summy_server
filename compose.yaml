@@ -7,8 +7,49 @@ services:
       - 'MARIADB_ROOT_PASSWORD=verysecret'
       - 'MARIADB_USER=myuser'
     ports:
-      - '3306'
+      - '3306:3306'
+    volumes:
+      - 'mariadb_data:/var/lib/mysql'
+    restart: always
+    networks:
+      - app-network
+      
   redis:
     image: 'redis:latest'
     ports:
-      - '6379'
+      - '6379:6379'
+    volumes:
+      - 'redis_data:/data'
+    restart: always
+    networks:
+      - app-network
+      
+  app:
+    image: 'openjdk:21-slim'
+    depends_on:
+      - mariadb
+      - redis
+    volumes:
+      - './:/app'
+      - './deploy.sh:/app/deploy.sh'
+    working_dir: /app
+    ports:
+      - '8080:8080'
+    environment:
+      - 'SPRING_PROFILES_ACTIVE=prod'
+      - 'SPRING_DATASOURCE_URL=jdbc:mariadb://mariadb:3306/mydatabase'
+      - 'SPRING_DATASOURCE_USERNAME=myuser'
+      - 'SPRING_DATASOURCE_PASSWORD=secret'
+      - 'SPRING_REDIS_HOST=redis'
+    restart: always
+    networks:
+      - app-network
+    command: sh -c "chmod +x /app/deploy.sh && /app/deploy.sh"
+
+volumes:
+  mariadb_data:
+  redis_data:
+
+networks:
+  app-network:
+    driver: bridge
