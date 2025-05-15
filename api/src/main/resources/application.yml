@@ -14,7 +14,7 @@ openai:
 # xAI API 설정
 xai:
   api:
-    key: ${XAI_API_KEY:xai-I5jPz8UFlbiwFToADOqux9gb9SkNdynIYNpnCp3WOsLhGp89bh23bg00ORYMABiDtT5BzYVOJAEbAQsX}  # 환경 변수에서 xAI API 키 로드
+    key: ${XAI_API_KEY:}  # 환경 변수에서 xAI API 키 로드
     url: https://api.x.ai/v1  # xAI API 엔드포인트
 
 # 서버 포트 설정
