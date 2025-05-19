@@ -1,5 +1,6 @@
 package com.jwp.core.config;
 
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -11,5 +12,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @Configuration
 @EnableJpaAuditing // JPA Auditing 활성화 (생성일시, 수정일시 자동 관리)
 @EnableJpaRepositories(basePackages = {"com.jwp.core.repository"}) // JPA 레포지토리 스캔 경로
+@EntityScan(basePackages = {"com.jwp.core.domain"}) // 엔티티 스캔 경로 추가
 public class JpaConfig {
 }
