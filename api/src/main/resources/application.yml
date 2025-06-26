@@ -14,3 +14,11 @@ openai:
 # 서버 포트 설정
 server:
   port: 8080  # 애플리케이션 서버 포트
+
+# 외부 API 설정
+external:
+  api:
+    base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
+    openai:
+      api-key: ${OPENAI_API_KEY:}  # 환경 변수에서 API 키 로드
+      model: ${OPENAI_MODEL:gpt-3.5-turbo}  # 환경 변수에서 모델명 로드
