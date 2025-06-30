@@ -2,8 +2,10 @@ package com.jwp.api.dto.response;
 
 import com.jwp.core.domain.User;
 import com.jwp.core.domain.UserStatus;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -13,13 +15,15 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserResponse {
-    private final Long id;
-    private final String email;
-    private final String name;
-    private final UserStatus status;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
+    private Long id;
+    private String email;
+    private String name;
+    private UserStatus status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     /**
      * 도메인 객체로부터 응답 DTO 생성

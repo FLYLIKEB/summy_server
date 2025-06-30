@@ -1,7 +1,9 @@
 package com.jwp.api.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * 파일 업로드 응답 DTO
@@ -9,10 +11,12 @@ import lombok.Getter;
  */
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class FileUploadResponse {
-    private final boolean success;
-    private final String message;
-    private final String fileUrl;
-    private final String fileName;
-    private final long fileSize;
+    private boolean success;
+    private String message;
+    private String fileUrl;
+    private String fileName;
+    private long fileSize;
 } 

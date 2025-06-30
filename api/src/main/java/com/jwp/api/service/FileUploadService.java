@@ -63,12 +63,12 @@ public class FileUploadService {
             int lastDotIndex = originalFilename.lastIndexOf(".");
             if (lastDotIndex > 0) {
                 extension = originalFilename.substring(lastDotIndex).toLowerCase();
-                if (!isAllowedExtension(extension)) {
-                    throw new FileUploadException("허용되지 않는 파일 형식입니다.");
-                }
             }
-            // String extension = originalFilename != null ? 
-            //     originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
+            
+            if (!isAllowedExtension(extension)) {
+                throw new FileUploadException("허용되지 않는 파일 형식입니다.");
+            }
+
             String newFilename = UUID.randomUUID().toString() + extension;
 
             // 파일 저장
@@ -90,5 +90,19 @@ public class FileUploadService {
             log.error("파일 업로드 중 오류 발생", e);
             throw new FileUploadException("파일 업로드 중 오류가 발생했습니다.");
         }
+    }
+
+    private boolean isAllowedExtension(String extension) {
+        if (extension == null || extension.isEmpty()) {
+            return false;
+        }
+        // 허용 확장자 목록 (소문자로 비교)
+        String[] allowedExtensions = {".txt", ".md", ".jpg", ".jpeg", ".png", ".gif", ".pdf", ".xlsx", ".xls", ".docx"};
+        for (String allowed : allowedExtensions) {
+            if (extension.equals(allowed)) {
+                return true;
+            }
+        }
+        return false;
     }
 } 

@@ -31,7 +31,6 @@ public class FileUploadController {
      * @param file 업로드할 파일
      * @return 업로드 결과
      */
-    @PostMapping
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "파일 업로드", description = "파일을 서버에 업로드합니다.")
     @ApiResponses(value = {
