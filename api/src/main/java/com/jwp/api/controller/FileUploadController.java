@@ -1,6 +1,7 @@
 package com.jwp.api.controller;
 
 import com.jwp.api.dto.response.FileUploadResponse;
+import com.jwp.api.exception.FileUploadException;
 import com.jwp.api.service.FileUploadService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
