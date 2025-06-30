@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
+import java.nio.file.StandardCopyOption;
 
 /**
  * 파일 업로드 서비스
@@ -50,13 +51,29 @@ public class FileUploadService {
 
             // 파일명 생성 (UUID + 원본 파일명)
             String originalFilename = file.getOriginalFilename();
-            String extension = originalFilename != null ? 
-                originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
+            if (originalFilename == null || originalFilename.trim().isEmpty()) {
+                throw new FileUploadException("파일명이 유효하지 않습니다.");
+            }
+            
+            // 파일명에서 경로 순회 문자 제거
+            originalFilename = Paths.get(originalFilename).getFileName().toString();
+            
+            // 허용된 파일 확장자 검증
+            String extension = "";
+            int lastDotIndex = originalFilename.lastIndexOf(".");
+            if (lastDotIndex > 0) {
+                extension = originalFilename.substring(lastDotIndex).toLowerCase();
+                if (!isAllowedExtension(extension)) {
+                    throw new FileUploadException("허용되지 않는 파일 형식입니다.");
+                }
+            }
+            // String extension = originalFilename != null ? 
+            //     originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
             String newFilename = UUID.randomUUID().toString() + extension;
 
             // 파일 저장
             Path filePath = uploadPath.resolve(newFilename);
-            Files.copy(file.getInputStream(), filePath);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
             // 파일 URL 생성
             String fileUrl = "/uploads/" + newFilename;
